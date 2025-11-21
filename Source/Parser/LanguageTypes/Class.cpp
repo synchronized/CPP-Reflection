@@ -4,11 +4,11 @@
 ** Class.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "LanguageTypes/Class.h"
+#include "Parser/LanguageTypes/Class.h"
 
-#include "ReservedTypes.h"
+#include "Parser/ReservedTypes.h"
 
 namespace
 {
@@ -109,7 +109,7 @@ bool Class::ShouldCompile(void) const
     return isAccessible( ) && !isNativeType( m_qualifiedName );
 }
 
-TemplateData Class::CompileTemplate(const ReflectionParser *context) const
+TemplateData Class::CompileTemplate(ReflectionParser *context) const
 {
     TemplateData data { TemplateData::Type::Object };
 

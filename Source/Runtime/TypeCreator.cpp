@@ -4,9 +4,9 @@
 ** TypeCreator.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "TypeCreator.h"
+#include "Runtime/TypeCreator.h"
 
 namespace ursine
 {

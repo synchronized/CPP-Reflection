@@ -4,13 +4,10 @@
 ** Argument.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
-
-#include "Argument.h"
-
-#include "Type.h"
-
-#include "Variant.h"
+#include "Runtime/Precompiled.h"
+#include "Runtime/Argument.h"
+#include "Runtime/Type.h"
+#include "Runtime/Variant.h"
 
 namespace ursine
 {

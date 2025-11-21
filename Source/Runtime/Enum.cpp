@@ -4,11 +4,11 @@
 ** Enum.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "Enum.h"
+#include "Runtime/Enum.h"
 
-#include "Variant.h"
+#include "Runtime/Variant.h"
 
 namespace ursine
 {

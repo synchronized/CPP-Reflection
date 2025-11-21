@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Cursor.h"
+#include "Parser/Cursor.h"
 
 class ReflectionParser;
 
@@ -22,9 +22,10 @@ public:
 
     void CompileTemplateData(
         TemplateData &data, 
-        const ReflectionParser *context
+        ReflectionParser *context
     ) const;
-private:
+
+public:
     typedef std::pair<std::string, std::string> Property;
 
     std::unordered_map<std::string, std::string> m_properties;

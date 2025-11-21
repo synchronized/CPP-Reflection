@@ -1,14 +1,14 @@
 #pragma once
 
-#include <Meta.h>
+#include <Runtime/Meta.h>
 
-enum class SliderType
+enum class Meta(Enable) SliderType
 {
     Horizontal,
     Vertical
-} Meta(Enable);
+};
 
-struct Slider : ursine::meta::MetaProperty
+struct Meta(Enable) Slider : ursine::meta::MetaProperty
 {
     META_OBJECT;
 
@@ -16,9 +16,9 @@ struct Slider : ursine::meta::MetaProperty
 
     Slider(SliderType type)
         : type(type) { }
-} Meta(Enable);
+};
 
-struct Range : ursine::meta::MetaProperty
+struct Meta(Enable) Range : ursine::meta::MetaProperty
 {
     META_OBJECT;
 
@@ -27,4 +27,4 @@ struct Range : ursine::meta::MetaProperty
     Range(float min, float max)
         : min(min)
         , max(max) { }
-} Meta(Enable);
+};

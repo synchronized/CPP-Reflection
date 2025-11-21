@@ -6,19 +6,19 @@
 
 #pragma once
 
-#include "MetaManager.h"
+#include "Runtime/MetaManager.h"
 
-#include "Constructor.h"
-#include "Destructor.h"
+#include "Runtime/Constructor.h"
+#include "Runtime/Destructor.h"
 
-#include "Field.h"
-#include "Global.h"
+#include "Runtime/Field.h"
+#include "Runtime/Global.h"
 
-#include "Method.h"
-#include "Function.h"
+#include "Runtime/Method.h"
+#include "Runtime/Function.h"
 
-#include "Enum.h"
-#include "EnumContainer.h"
+#include "Runtime/Enum.h"
+#include "Runtime/EnumContainer.h"
 
 namespace ursine
 {
@@ -266,4 +266,4 @@ namespace ursine
     }
 }
 
-#include "Impl/TypeData.hpp"
+#include "Runtime/Impl/TypeData.hpp"

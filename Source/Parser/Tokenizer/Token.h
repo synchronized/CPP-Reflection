@@ -19,4 +19,4 @@ struct Token
     Token(TokenEnumType type, const InputType &value);
 };
 
-#include "Impl/Token.hpp"
+#include "Parser/Tokenizer/Impl/Token.hpp"

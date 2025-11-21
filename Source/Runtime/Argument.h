@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "TypeConfig.h"
+#include "Runtime/TypeConfig.h"
 
 #include <vector>
 
@@ -49,4 +49,4 @@ namespace ursine
     }
 }
 
-#include "Impl/Argument.hpp"
+#include "Runtime/Impl/Argument.hpp"

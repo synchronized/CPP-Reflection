@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Type.h"
+#include "Runtime/Type.h"
 
 #include <string>
 #include <vector>

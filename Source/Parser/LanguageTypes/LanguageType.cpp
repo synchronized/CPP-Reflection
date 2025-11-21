@@ -4,9 +4,9 @@
 ** LanguageType.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "LanguageType.h"
+#include "Parser/LanguageTypes/LanguageType.h"
 
 LanguageType::LanguageType(
     const Cursor &cursor, 

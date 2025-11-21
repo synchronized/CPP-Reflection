@@ -4,13 +4,12 @@
 ** Method.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include <fmt/format.h>
 
-#include "LanguageTypes/Class.h"
-#include "LanguageTypes/Method.h"
+#include "Parser/Precompiled.h"
 
-#include <boost/format.hpp>
-#include <boost/algorithm/string/join.hpp>
+#include "Parser/LanguageTypes/Class.h"
+#include "Parser/LanguageTypes/Method.h"
 
 Method::Method(
     const Cursor &cursor, 
@@ -31,7 +30,7 @@ bool Method::ShouldCompile(void) const
     return isAccessible( );
 }
 
-TemplateData Method::CompileTemplate(const ReflectionParser *context) const
+TemplateData Method::CompileTemplate(ReflectionParser *context) const
 {
     TemplateData data { TemplateData::Type::Object };
 
@@ -62,13 +61,14 @@ bool Method::isAccessible(void) const
 
 std::string Method::getQualifiedSignature(void) const
 {
-    auto argsList = boost::join( m_signature, ", " );
+    auto argsList = utils::StringJoin( m_signature, ", " );
 
     std::string constNess = m_isConst ? " const" : "";
 
-    return (boost::format( "%1%(%2%::*)(%3%)%4%" ) % 
-        m_returnType % 
-        m_parent->m_qualifiedName % 
-        argsList % constNess
-    ).str( );
+    return fmt::format( "{}({}::*)({}){}", 
+        m_returnType,
+        m_parent->m_qualifiedName,
+        argsList,
+        constNess
+    );
 }

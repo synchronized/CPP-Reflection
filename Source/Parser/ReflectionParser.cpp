@@ -4,22 +4,20 @@
 ** ReflectionParser.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "ReflectionParser.h"
-#include "Version.h"
+#include "Parser/ReflectionParser.h"
+#include "Parser/Version.h"
+#include "Parser/MetaUtils.h"
 
-#include "LanguageTypes/Class.h"
-#include "LanguageTypes/External.h"
-#include "LanguageTypes/Global.h"
-#include "LanguageTypes/Function.h"
-#include "LanguageTypes/Enum.h"
-
-#include <boost/regex.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/predicate.hpp>
+#include "Parser/LanguageTypes/Class.h"
+#include "Parser/LanguageTypes/External.h"
+#include "Parser/LanguageTypes/Global.h"
+#include "Parser/LanguageTypes/Function.h"
+#include "Parser/LanguageTypes/Enum.h"
 
 #include <fstream>
+#include <regex>
 
 #define RECURSE_NAMESPACES(kind, cursor, method, ns) \
     if (kind == CXCursor_Namespace)                  \
@@ -50,7 +48,7 @@
 
 namespace
 {
-    const boost::regex kSpecialCharsRegex( "[^a-zA-Z0-9]+" );
+    const std::regex kSpecialCharsRegex( "[^a-zA-Z0-9]+" );
 }
 
 ReflectionParser::ReflectionParser(const ReflectionOptions &options)
@@ -61,7 +59,7 @@ ReflectionParser::ReflectionParser(const ReflectionOptions &options)
     , m_moduleFileSourceTemplate( "" )
 {
     // replace special characters in target name with underscores
-    m_options.targetName = boost::regex_replace(
+    m_options.targetName = std::regex_replace(
         m_options.targetName, 
         kSpecialCharsRegex, 
         "_" 
@@ -124,6 +122,7 @@ void ReflectionParser::Parse(void)
     tempNamespace.clear( );
 
     buildEnums( cursor, tempNamespace );
+
 }
 
 void ReflectionParser::GenerateFiles(void)
@@ -177,11 +176,11 @@ void ReflectionParser::GenerateFiles(void)
             continue;
 
         auto outputFile = outputFileDirectory / relativeDir;
-        auto outputFileHeader = change_extension( outputFile, "Generated.h" );
-        auto outputFileSource = change_extension( outputFile, "Generated.cpp" );
+        auto outputFileHeader = fs::path(outputFile).replace_extension("Generated.h");
+        auto outputFileSource = fs::path(outputFile).replace_extension("Generated.cpp");
 
         // module file name
-        file.second.name = boost::regex_replace(
+        file.second.name = std::regex_replace(
             relativeDir,
             kSpecialCharsRegex,
             "_"
@@ -273,19 +272,25 @@ void ReflectionParser::GenerateFiles(void)
     }
 }
 
-MustacheTemplate ReflectionParser::LoadTemplate(const std::string &name) const
+std::string ReflectionParser::LoadTemplateContent(const std::string &name)
 {
-    auto path = fs::path( m_options.templateDirectory );
-
-    path.append( name );
+    auto path = fs::path(m_options.templateDirectory).append(name).string();
 
     try
     {
-        std::string text;
+        auto cache = this->m_templatePartialCache.find( path );
+        if (cache == this->m_templatePartialCache.end( ))
+        {
+            std::string text;
 
-        utils::LoadText( path.string( ), text );
+            utils::LoadText( path, text );
 
-        return text;
+            this->m_templatePartialCache[ path ] = text;
+
+            return text;
+        }
+            
+        return cache->second;
     }
     catch (std::exception &e)
     {
@@ -299,34 +304,23 @@ MustacheTemplate ReflectionParser::LoadTemplate(const std::string &name) const
     }
 
     // this will never happen
-    return { "" };
+    return "";
+}
+
+MustacheTemplate ReflectionParser::LoadTemplate(const std::string &name)
+{
+    return { LoadTemplateContent(name) };
 }
 
 TemplateData::PartialType ReflectionParser::LoadTemplatePartial(
     const std::string &name
-) const
+)
 {
-    auto path = 
-        fs::path( m_options.templateDirectory ).append( name ).string( );
-
     try
     {
-        auto partialLoader = [=]()
+        auto partialLoader = [=, this]()
         {
-            auto cache = m_templatePartialCache.find( path );
-
-            if (cache == m_templatePartialCache.end( ))
-            {
-                std::string text;
-
-                utils::LoadText( path, text );
-
-                m_templatePartialCache[ path ] = text;
-
-                return text;
-            }
-                
-            return cache->second;
+            return LoadTemplateContent(name);
         };
 
         return partialLoader;
@@ -351,7 +345,29 @@ void ReflectionParser::buildClasses(
     Namespace &currentNamespace
 )
 {
+
+    std::vector<Cursor> childList;
     for (auto &child : cursor.GetChildren( ))
+    {
+        auto kind = child.GetKind( );
+
+        switch (kind) {
+        case CXCursor_Namespace:
+        case CXCursor_ClassDecl:
+        case CXCursor_StructDecl:
+        case CXCursor_TypedefDecl:
+            {
+                childList.push_back(child);
+                break;
+            }
+        default:
+            {
+                continue;
+            }
+        }
+    }
+
+    for (auto &child : childList)
     {
         auto kind = child.GetKind( );
 
@@ -369,7 +385,7 @@ void ReflectionParser::buildClasses(
             auto displayName = child.GetDisplayName( );
 
             // external declaration; they're always compiled, but only registered
-            if (boost::starts_with( displayName, kMetaExternalTypeDefName ))
+            if (utils::StringStartWith( displayName, kMetaExternalTypeDefName ))
             {
                 m_externals.emplace_back(
                     std::make_shared<External>( child.GetTypedefType( ).GetDeclaration( ) )
@@ -536,5 +552,60 @@ void ReflectionParser::generateModuleFile(
             fileSource.string( ),
             m_moduleFileSourceTemplate.render( sourceData ) 
         );
+    }
+}
+
+void ReflectionParser::dump() 
+{
+    std::cout << std::endl;
+    std::cout << "---------- dump ------------" << std::endl;
+    for (auto& [file, module] : m_moduleFiles) {
+        std::cout << "{" << std::endl;
+        std::cout << "    file: " << file << std::endl;
+        std::cout << "    module: {" << std::endl;
+        std::cout << "        classes: [" << std::endl;
+        for (auto& clazz : module.classes) {
+            std::cout << "            {" << std::endl;
+            std::cout << "                class_name: " << clazz->m_name << std::endl;
+
+            std::cout << "                fields: [" << std::endl;
+            for (auto& field : clazz->m_fields) {
+                std::cout << "                    {" << std::endl;
+                std::cout << "                        type: " << field->m_type << std::endl;
+                std::cout << "                        name: " << field->m_name << std::endl;
+                std::cout << "                    }," << std::endl;
+            }
+            std::cout << "                ]" << std::endl;
+
+            std::cout << "                staticFields: [" << std::endl;
+            for (auto& field : clazz->m_staticFields) {
+                std::cout << "                    {" << std::endl;
+                std::cout << "                        type: " << field->m_type << std::endl;
+                std::cout << "                        name: " << field->m_name << std::endl;
+                std::cout << "                    }," << std::endl;
+            }
+            std::cout << "                ]" << std::endl;
+
+            std::cout << "                method: [" << std::endl;
+            for (auto& method : clazz->m_methods) {
+                std::cout << "                    {" << std::endl;
+                std::cout << "                        name: " << method->m_name << std::endl;
+                std::cout << "                    }," << std::endl;
+            }
+            std::cout << "                ]" << std::endl;
+
+            std::cout << "                staticMethods: [" << std::endl;
+            for (auto& func : clazz->m_staticMethods) {
+                std::cout << "                    {" << std::endl;
+                std::cout << "                        name: " << func->m_name << std::endl;
+                std::cout << "                    }," << std::endl;
+            }
+            std::cout << "                ]" << std::endl;
+
+            std::cout << "            }," << std::endl;
+        }
+        std::cout << "        ]" << std::endl;
+        std::cout << "    }" << std::endl;
+        std::cout << "}" << std::endl;
     }
 }

@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "VariantBase.h"
-#include "VariantPolicy.h"
+#include "Runtime/VariantBase.h"
+#include "Runtime/VariantPolicy.h"
 
-#include "Array.h"
-#include "TypeConfig.h"
+#include "Runtime/Array.h"
+#include "Runtime/TypeConfig.h"
 
-#include "Object.h"
+#include "Runtime/Object.h"
 
 #define DISABLE_VARIANT                  \
     typename std::enable_if<             \
@@ -147,7 +147,7 @@ namespace ursine
     }
 }
 
-#include "Impl/Variant.hpp"
+#include "Runtime/Impl/Variant.hpp"
 
 #undef DISABLE_VARIANT
 #undef DISABLE_VARIANT_DECL

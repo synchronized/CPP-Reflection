@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "Token.h"
-#include "TokenizerState.h"
-#include "TokenizerResult.h"
+#include "Parser/Tokenizer/Token.h"
+#include "Parser/Tokenizer/TokenizerState.h"
+#include "Parser/Tokenizer/TokenizerResult.h"
 
 template<typename TokenEnumType, typename InputType = std::string>
 class Tokenizer
@@ -39,4 +39,4 @@ private:
     typename StateType::Handle m_rootState;
 };
 
-#include "Impl/Tokenizer.hpp"
+#include "Parser/Tokenizer/Impl/Tokenizer.hpp"

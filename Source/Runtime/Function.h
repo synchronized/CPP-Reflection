@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "MetaContainer.h"
-#include "Invokable.h"
+#include "Runtime/MetaContainer.h"
+#include "Runtime/Invokable.h"
 
-#include "Variant.h"
-#include "Argument.h"
+#include "Runtime/Variant.h"
+#include "Runtime/Argument.h"
 
-#include "FunctionInvoker.h"
+#include "Runtime/FunctionInvoker.h"
 
 #include <functional>
 
@@ -55,4 +55,4 @@ namespace ursine
     }
 }
 
-#include "Impl/Function.hpp"
+#include "Runtime/Impl/Function.hpp"

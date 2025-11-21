@@ -4,13 +4,12 @@
 ** Function.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include <fmt/format.h>
 
-#include "LanguageTypes/Function.h"
-#include "LanguageTypes/Class.h"
+#include "Parser/Precompiled.h"
 
-#include <boost/format.hpp>
-#include <boost/algorithm/string/join.hpp>
+#include "Parser/LanguageTypes/Function.h"
+#include "Parser/LanguageTypes/Class.h"
 
 Function::Function(
     const Cursor &cursor, 
@@ -31,7 +30,7 @@ bool Function::ShouldCompile(void) const
     return isAccessible( );
 }
 
-TemplateData Function::CompileTemplate(const ReflectionParser *context) const
+TemplateData Function::CompileTemplate(ReflectionParser *context) const
 {
     TemplateData data { TemplateData::Type::Object };
 
@@ -58,7 +57,7 @@ bool Function::isAccessible(void) const
 
 std::string Function::getQualifiedSignature(void) const
 {
-    auto argsList = boost::join( m_signature, ", " );
+    std::string argsList = utils::StringJoin( m_signature, ", " );
 
-    return (boost::format( "%1%(*)(%2%)" ) % m_returnType % argsList).str( );
+    return fmt::format( "{}(*)({})", m_returnType, argsList);
 }

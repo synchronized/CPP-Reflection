@@ -4,6 +4,6 @@
 ** Precompiled.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
 // intentionally left blank

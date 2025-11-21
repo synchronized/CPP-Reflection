@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "MetaContainer.h"
+#include "Runtime/MetaContainer.h"
 
-#include "Variant.h"
+#include "Runtime/Variant.h"
 
-#include "GlobalGetter.h"
-#include "GlobalSetter.h"
+#include "Runtime/GlobalGetter.h"
+#include "Runtime/GlobalSetter.h"
 
 namespace ursine
 {

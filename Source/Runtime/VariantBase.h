@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "JsonConfig.h"
+#include "Runtime/JsonConfig.h"
 
 namespace ursine
 {

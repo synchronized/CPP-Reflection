@@ -4,10 +4,10 @@
 ** Field.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "LanguageTypes/Class.h"
-#include "LanguageTypes/Field.h"
+#include "Parser/LanguageTypes/Class.h"
+#include "Parser/LanguageTypes/Field.h"
 
 Field::Field(
     const Cursor &cursor, 
@@ -40,7 +40,7 @@ bool Field::ShouldCompile(void) const
     return isAccessible( );
 }
 
-TemplateData Field::CompileTemplate(const ReflectionParser *context) const
+TemplateData Field::CompileTemplate(ReflectionParser *context) const
 {
     TemplateData data = { TemplateData::Type::Object };
 

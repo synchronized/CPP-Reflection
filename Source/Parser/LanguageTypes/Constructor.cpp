@@ -4,12 +4,11 @@
 ** Constructor.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "LanguageTypes/Class.h"
-#include "LanguageTypes/Constructor.h"
-
-#include <boost/algorithm/string/join.hpp>
+#include "Parser/MetaUtils.h"
+#include "Parser/LanguageTypes/Class.h"
+#include "Parser/LanguageTypes/Constructor.h"
 
 Constructor::Constructor(
     const Cursor &cursor, 
@@ -29,7 +28,7 @@ bool Constructor::ShouldCompile(void) const
 }
 
 TemplateData Constructor::CompileTemplate(
-    const ReflectionParser *context
+    ReflectionParser *context
 ) const
 {
     TemplateData data { TemplateData::Type::Object };
@@ -82,5 +81,5 @@ std::string Constructor::getTemplateParameters(bool isDynamic) const
     // Args...
     params.insert( params.end( ), m_signature.begin( ), m_signature.end( ) );
 
-    return boost::join( params, ", " );
+    return utils::StringJoin( params, ", " );
 }

@@ -4,9 +4,9 @@
 ** External.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "External.h"
+#include "Parser/LanguageTypes/External.h"
 
 External::External(const Cursor &cursor)
     : Class( cursor, { } )

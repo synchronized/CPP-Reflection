@@ -1,10 +1,3 @@
-cmake_minimum_required(VERSION 2.8.3)
-
-project(MetaRuntime CXX)
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../CMake")
-
-include(Precompiled)
 
 set(HEADER_FILES
     VariantPolicy.h
@@ -122,53 +115,27 @@ set(SOURCE_FILES
     VariantBase.cpp
 )
 
-set(JSON_SOURCE_FILE "../Common/Lib/json11.cpp")
-
-# allow use of Common and Library directories
-include_directories(..)
-include_directories(../Common)
-include_directories(../Common/Lib)
-
 # header files are superflous, but some IDEs (Visual Studio) don't include
 # them in the solution explorer without them being added to the list of sources
-add_library(MetaRuntime STATIC 
+set(TARGET_NAME MetaRuntime)
+add_library(${TARGET_NAME} STATIC 
     ${HEADER_FILES} 
     ${SOURCE_FILES}
-
-    # compile the JSON library
-    ${JSON_SOURCE_FILE}
 )
 
-set_precompiled_header(MetaRuntime 
-    Precompiled.h 
-    Precompiled.cpp
-)
+target_include_directories(${TARGET_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_link_libraries(${TARGET_NAME} PUBLIC MetaCommon)
+target_link_libraries(${TARGET_NAME} PRIVATE json11)
+target_link_libraries(${TARGET_NAME} PRIVATE mustache)
 
-if (MSVC)
-    # set JSON source file to ignore the precompiled header use on MSVC
-    set_source_files_properties(
-        ${JSON_SOURCE_FILE} 
-        PROPERTIES COMPILE_FLAGS /Y-
-    )
+set_compiler_warnings(${TARGET_NAME})
 
-    target_compile_options(MetaRuntime 
-        PUBLIC
-        # treat warnings as errors
-        /WX 
-        # multi process compilation
-        /MP
-    )
-else ()
-    target_compile_options(MetaRuntime 
-        PUBLIC
-        -std=c++11
-        -Wno-format-security
-    )
-endif ()
+set_target_properties(${TARGET_NAME} PROPERTIES
+        CXX_STANDARD 20
+        DEBUG_POSTFIX ${CPP_REFLECTION_DEBUG_POSTFIX}
+        FOLDER "CppReflection/Core"
+        )
 
-set(META_RUNTIME_INCLUDE_DIRS 
-    "${CMAKE_CURRENT_LIST_DIR}"
-    "${CMAKE_CURRENT_LIST_DIR}/../" 
-    "${CMAKE_CURRENT_LIST_DIR}/../Common/Lib"
-    CACHE STRING "Location of the runtime include directories."
-)
+if (USE_PCH)
+    target_precompile_headers(${TARGET_NAME} PRIVATE "Precompiled.h")
+endif()

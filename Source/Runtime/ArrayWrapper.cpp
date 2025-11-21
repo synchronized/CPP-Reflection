@@ -4,9 +4,9 @@
 ** ArrayWrapper.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "ArrayWrapper.h"
+#include "Runtime/ArrayWrapper.h"
 
 #include "Common/Logging.h"
 

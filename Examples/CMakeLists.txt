@@ -1,11 +1,5 @@
-cmake_minimum_required(VERSION 2.8.3)
 
 project(MetaTests CXX)
-
-add_subdirectory(../Source/Runtime MetaRuntime)
-add_subdirectory(../Source/Parser MetaParser)
-
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../Source/CMake")
 
 include(MetaParser)
 
@@ -37,23 +31,21 @@ meta_parser_prebuild(
     OUT_INC TEST_META_GENERATED_HEADERS
     OUT_SRC TEST_META_GENERATED_SOURCES
 )
+message("META_MODULE_SOURCE : ${META_MODULE_SOURCE}")
+message("META_GENERATED_FILES : ${META_GENERATED_FILES}")
+message("TEST_META_GENERATED_HEADERS : ${TEST_META_GENERATED_HEADERS}")
+message("TEST_META_GENERATED_SOURCES : ${TEST_META_GENERATED_SOURCES}")
 
 add_library(${TEST_MODULE_TARGET} ${META_GENERATED_FILES})
+target_include_directories(${TEST_MODULE_TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(${TEST_MODULE_TARGET} MetaRuntime)
+target_link_libraries(${TEST_MODULE_TARGET} json11)
 
-if (MSVC)
-    add_compile_options(
-        # treat warnings as errors
-        /WX
-        # multi process compilation
-        /MP
-    )
-else ()
-    add_compile_options(
-        -std=c++11
-    )
-endif ()
+set_compiler_warnings(${TEST_MODULE_TARGET})
+
+set_target_properties(${TEST_MODULE_TARGET} PROPERTIES 
+        FOLDER "CppReflection/Examples")
 
 macro (add_meta_test TARGET SOURCES)
     add_executable(${TARGET} 
@@ -64,7 +56,8 @@ macro (add_meta_test TARGET SOURCES)
     )
 
     target_link_libraries(${TARGET} MetaRuntime ${TEST_MODULE_TARGET})
-    set_property(TARGET ${TARGET} PROPERTY FOLDER Tests)
+    set_target_properties(${TARGET} PROPERTIES 
+            FOLDER "CppReflection/Examples")
 endmacro ()
 
 add_meta_test(MetaProperties MetaProperties.cpp)
@@ -83,4 +76,5 @@ meta_parser_build(
     MODULE_SOURCE_FILE ${META_MODULE_SOURCE}
     HEADER_FILES ${TEST_HEADERS}
     PARSER_EXECUTABLE "$<TARGET_FILE:MetaParser>"
+    TEMPLATE_DIR "${CPP_REFLECTION_TEMPLATE_DIR}"
 )

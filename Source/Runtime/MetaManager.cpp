@@ -4,12 +4,12 @@
 ** MetaManager.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "MetaManager.h"
+#include "Runtime/MetaManager.h"
 
-#include "Type.h"
-#include "Variant.h"
+#include "Runtime/Type.h"
+#include "Runtime/Variant.h"
 
 #include "Common/Logging.h"
 

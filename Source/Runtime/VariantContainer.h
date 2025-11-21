@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "VariantBase.h"
+#include "Runtime/VariantBase.h"
 
-#include "MetaTraits.h"
+#include "Runtime/MetaTraits.h"
 
-#include "Object.h"
+#include "Runtime/Object.h"
 
 #define DEFAULT_TYPE_HANDLER(typeName)                                                           \
     template<typename U = T>                                                                     \
@@ -116,5 +116,5 @@ namespace ursine
 
 #undef DEFAULT_TYPE_HANDLER
 
-#include "Impl/VariantContainer.hpp"
-#include "Impl/VariantContainerStandardTypes.hpp"
+#include "Runtime/Impl/VariantContainer.hpp"
+#include "Runtime/Impl/VariantContainerStandardTypes.hpp"

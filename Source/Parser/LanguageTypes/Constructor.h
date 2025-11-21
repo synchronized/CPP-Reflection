@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "LanguageType.h"
-#include "Invokable.h"
+#include "Parser/LanguageTypes/LanguageType.h"
+#include "Parser/LanguageTypes/Invokable.h"
 
 class Class;
 
@@ -27,7 +27,7 @@ public:
     bool ShouldCompile(void) const;
     
     TemplateData CompileTemplate(
-        const ReflectionParser *context
+        ReflectionParser *context
     ) const override;
 
 private:

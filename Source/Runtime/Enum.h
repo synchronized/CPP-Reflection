@@ -5,7 +5,7 @@
 ** --------------------------------------------------------------------------*/
 #pragma once
 
-#include "EnumBase.h"
+#include "Runtime/EnumBase.h"
 
 namespace ursine
 {

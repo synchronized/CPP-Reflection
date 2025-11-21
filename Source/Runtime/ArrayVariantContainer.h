@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "VariantBase.h"
+#include "Runtime/VariantBase.h"
 
 namespace ursine
 {
@@ -40,4 +40,4 @@ namespace ursine
     }
 }
 
-#include "Impl/ArrayVariantContainer.hpp"
+#include "Runtime/Impl/ArrayVariantContainer.hpp"

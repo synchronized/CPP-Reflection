@@ -7,6 +7,7 @@
 #pragma once
 
 #if defined(__REFLECTION_PARSER__)
+    #define CLASS(class, ...)
 
     #define Meta(...) __attribute__((annotate(#__VA_ARGS__)))
 

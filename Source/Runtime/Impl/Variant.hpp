@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "../VariantContainer.h"
-#include "../ObjectWrapper.h"
-#include "../ArrayVariantContainer.h"
+#include "Runtime/VariantContainer.h"
+#include "Runtime/ObjectWrapper.h"
+#include "Runtime/ArrayVariantContainer.h"
 
 namespace ursine
 {

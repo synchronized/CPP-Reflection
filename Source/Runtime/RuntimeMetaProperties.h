@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "MetaProperty.h"
-#include "Type.h"
+#include "Runtime/MetaProperty.h"
+#include "Runtime/Type.h"
 
 /** @brief Ensures associative enum values are serialized as their literal value.
  */

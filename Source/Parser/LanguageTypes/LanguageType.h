@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "Cursor.h"
-#include "Namespace.h"
+#include "Parser/Cursor.h"
+#include "Parser/Namespace.h"
 
-#include "MetaDataManager.h"
-#include "ReflectionParser.h"
+#include "Parser/MetaDataManager.h"
+#include "Parser/ReflectionParser.h"
 
 class LanguageType
 {
@@ -23,10 +23,10 @@ public:
     std::string GetSourceFile(void) const;
 
     virtual TemplateData CompileTemplate(
-        const ReflectionParser *context
+        ReflectionParser *context
     ) const = 0;
 
-protected:
+public:
     MetaDataManager m_metaData;
 
     // determines if the type is enabled in reflection database generation

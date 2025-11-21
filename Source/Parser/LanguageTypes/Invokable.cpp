@@ -4,9 +4,9 @@
 ** Invokable.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "LanguageTypes/Invokable.h"
+#include "Parser/LanguageTypes/Invokable.h"
 
 Invokable::Invokable(const Cursor &cursor)
     : m_returnType( utils::GetQualifiedName( cursor.GetReturnType( ) ))

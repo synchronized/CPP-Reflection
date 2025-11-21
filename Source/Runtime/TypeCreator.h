@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Variant.h"
+#include "Runtime/Variant.h"
 
 namespace ursine
 {
@@ -62,4 +62,4 @@ namespace ursine
     }
 }
 
-#include "Impl/TypeCreator.hpp"
+#include "Runtime/Impl/TypeCreator.hpp"

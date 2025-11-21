@@ -77,6 +77,7 @@ function(meta_parser_build)
         GENERATED_DIR
         PCH_NAME
         PARSER_EXECUTABLE
+        TEMPLATE_DIR
     )
 
     set(MULTI_VALUE_ARGS 
@@ -88,19 +89,27 @@ function(meta_parser_build)
 
     cmake_parse_arguments(BUILD_META "" "${ONE_VALUE_ARGS}" "${MULTI_VALUE_ARGS}" ${ARGN})
 
-    get_property(DIRECTORIES TARGET ${BUILD_META_TARGET} PROPERTY INCLUDE_DIRECTORIES)
-
-    set(RAW_INCLUDES ${GLOBAL_META_INCLUDES} ${DIRECTORIES} ${BUILD_META_INCLUDES})
-
-    set(INCLUDES "")
-
-    foreach (INC ${RAW_INCLUDES})
-        set(INCLUDES "${INCLUDES}${INC}\n")
-    endforeach ()
+    # 获取目标依赖库的头文件路径
+    #set(include_genex "$<TARGET_PROPERTY:${BUILD_META_TARGET},INTERFACE_INCLUDE_DIRECTORIES>")
+    # 获取目标依赖库的头文件路径 + 自身定义的头文件路径
+    set(include_genex "$<TARGET_PROPERTY:${BUILD_META_TARGET},INCLUDE_DIRECTORIES>")
+    
+    # 处理全局头文件路径和传入参数的头文件路径
+    set(RAW_INCLUDES ${GLOBAL_META_INCLUDES} ${BUILD_META_INCLUDES})
+    set(RAW_INCLUDES_CONTENT "")
+    # 构建固定路径的字符串
+    if(RAW_INCLUDES)
+        foreach(include ${RAW_INCLUDES})
+            string(APPEND RAW_INCLUDES_CONTENT "${include}\n")
+        endforeach()
+    endif()
 
     set(INCLUDES_FILE "${BUILD_META_GENERATED_DIR}/Module.${BUILD_META_TARGET}.Includes.txt")
 
-    file(WRITE ${INCLUDES_FILE} ${INCLUDES})
+    #file(WRITE ${INCLUDES_FILE} ${INCLUDES})
+    file(GENERATE OUTPUT ${INCLUDES_FILE}
+        CONTENT "${RAW_INCLUDES_CONTENT}$<JOIN:${include_genex},\n>"
+    )
     
     set(DEFINES ${GLOBAL_META_DEFINES} ${BUILD_META_DEFINES})
 
@@ -123,19 +132,20 @@ function(meta_parser_build)
 
     list(REMOVE_ITEM BUILD_META_GENERATED_FILES "${BUILD_META_SOURCE_ROOT}/${BUILD_META_MODULE_HEADER}")
 
+    message("BUILD_META_GENERATED_FILES: ${BUILD_META_GENERATED_FILES}")
     foreach (GENERATED_FILE ${BUILD_META_GENERATED_FILES})
         get_filename_component(EXTENSION ${GENERATED_FILE} EXT)
 
         set_source_files_properties(${GENERATED_FILE} PROPERTIES GENERATED TRUE)
 
         # we have to create the files, as they might not be written to
-        if (NOT EXISTS ${GENERATED_FILE})
-            if ("${EXTENSION}" STREQUAL ".Generated.h")
-                file(WRITE ${GENERATED_FILE} "")
-            else ()
-                file(WRITE ${GENERATED_FILE} ${EMPTY_SOURCE_CONTENTS})
-            endif ()
-        endif ()
+        #if (NOT EXISTS ${GENERATED_FILE})
+        #    if ("${EXTENSION}" STREQUAL ".Generated.h")
+        #        file(WRITE ${GENERATED_FILE} "")
+        #    else ()
+        #        file(WRITE ${GENERATED_FILE} ${EMPTY_SOURCE_CONTENTS})
+        #    endif ()
+        #endif ()
     endforeach ()
 
     # add the command that generates the header and source files
@@ -152,5 +162,7 @@ function(meta_parser_build)
         ${PCH_SWITCH}
         --includes "${INCLUDES_FILE}"
         ${DEFINES_SWITCH}
+        --template-dir "${BUILD_META_TEMPLATE_DIR}"
+        --display-diagnostics
     )
 endfunction ()

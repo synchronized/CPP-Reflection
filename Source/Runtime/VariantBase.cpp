@@ -4,11 +4,11 @@
 ** VariantBase.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "VariantBase.h"
+#include "Runtime/VariantBase.h"
 
-#include "ArrayWrapper.h"
+#include "Runtime/ArrayWrapper.h"
 
 namespace ursine
 {

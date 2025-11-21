@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "TypeData.h"
-#include "TypeInfo.h"
+#include "Runtime/TypeData.h"
+#include "Runtime/TypeInfo.h"
 
 #include <vector>
 #include <unordered_map>
@@ -105,4 +105,4 @@ namespace ursine
     }
 }
 
-#include "Impl/ReflectionDatabase.hpp"
+#include "Runtime/Impl/ReflectionDatabase.hpp"

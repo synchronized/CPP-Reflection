@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "../Argument.h"
-#include "../Variant.h"
+#include "Runtime/Argument.h"
+#include "Runtime/Variant.h"
 
 namespace ursine
 {

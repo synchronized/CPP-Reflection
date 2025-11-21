@@ -4,11 +4,11 @@
 ** Variant.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "Variant.h"
+#include "Runtime/Variant.h"
 
-#include "Type.h"
+#include "Runtime/Type.h"
 
 namespace ursine
 {

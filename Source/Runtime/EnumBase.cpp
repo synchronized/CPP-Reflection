@@ -4,12 +4,12 @@
 ** EnumBase.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "EnumBase.h"
+#include "Runtime/EnumBase.h"
 
-#include "Variant.h"
-#include "Argument.h"
+#include "Runtime/Variant.h"
+#include "Runtime/Argument.h"
 
 namespace ursine
 {

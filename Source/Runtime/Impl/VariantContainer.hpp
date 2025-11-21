@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "../Type.h"
-#include "../Common/Compiler.h"
+#include "Runtime/Type.h"
+#include "Common/Compiler.h"
 
 #if defined(COMPILER_MSVC)
 

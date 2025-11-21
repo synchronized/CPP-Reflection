@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "ArrayWrapperBase.h"
+#include "Runtime/ArrayWrapperBase.h"
 
 namespace ursine
 {
@@ -43,4 +43,4 @@ namespace ursine
     }
 }
 
-#include "Impl/ArrayWrapper.hpp"
+#include "Runtime/Impl/ArrayWrapper.hpp"

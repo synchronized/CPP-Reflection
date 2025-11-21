@@ -4,12 +4,12 @@
 ** ObjectWrapper.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "ObjectWrapper.h"
-#include "Object.h"
+#include "Runtime/ObjectWrapper.h"
+#include "Runtime/Object.h"
 
-#include "Type.h"
+#include "Runtime/Type.h"
 
 namespace ursine
 {

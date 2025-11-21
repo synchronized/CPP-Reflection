@@ -4,11 +4,11 @@
 ** Destructor.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "Destructor.h"
+#include "Runtime/Destructor.h"
 
-#include "Variant.h"
+#include "Runtime/Variant.h"
 
 #include "Common/Logging.h"
 

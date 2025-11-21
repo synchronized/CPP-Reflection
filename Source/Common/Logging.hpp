@@ -6,7 +6,10 @@
 
 #pragma once
 
+#include <format>
 #include <iostream>
+
+#include <fmt/format.h>
 
 namespace ursine
 {
@@ -17,14 +20,14 @@ namespace ursine
             const std::string &file,
             const std::string &function,
             unsigned line,
-            const std::string &format,
+            const char *format_str,
             const Args&... args
         )
         {
             std::cerr << "----- Assertion Failed -----" << std::endl
                       << "----------------------------" << std::endl;
 
-            std::fprintf( stderr, format.c_str( ), args... );
+            std::cerr << fmt::format(fmt::runtime(format_str), args...);
 
             std::cerr << std::endl;
             std::cerr << "----------------------------" << std::endl;

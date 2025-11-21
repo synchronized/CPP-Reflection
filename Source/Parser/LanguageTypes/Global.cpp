@@ -4,10 +4,10 @@
 ** Global.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "LanguageTypes/Global.h"
-#include "LanguageTypes/Class.h"
+#include "Parser/LanguageTypes/Global.h"
+#include "Parser/LanguageTypes/Class.h"
 
 Global::Global(
     const Cursor &cursor, 
@@ -41,7 +41,7 @@ bool Global::ShouldCompile(void) const
     return isAccessible( );
 }
 
-TemplateData Global::CompileTemplate(const ReflectionParser *context) const
+TemplateData Global::CompileTemplate(ReflectionParser *context) const
 {
     TemplateData data = { TemplateData::Type::Object };
 

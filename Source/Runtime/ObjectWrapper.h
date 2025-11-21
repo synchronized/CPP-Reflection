@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "VariantBase.h"
+#include "Runtime/VariantBase.h"
 
-#include "JsonConfig.h"
+#include "Runtime/JsonConfig.h"
 
 namespace ursine
 {

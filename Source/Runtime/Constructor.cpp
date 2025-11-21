@@ -4,11 +4,11 @@
 ** Constructor.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "Constructor.h"
-#include "Invokable.h"
-#include "Type.h"
+#include "Runtime/Constructor.h"
+#include "Runtime/Invokable.h"
+#include "Runtime/Type.h"
 
 #include "Common/Logging.h"
 

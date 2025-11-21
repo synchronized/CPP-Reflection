@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "InvokableConfig.h"
+#include "Runtime/InvokableConfig.h"
 
 namespace ursine
 {

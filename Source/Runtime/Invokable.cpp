@@ -4,9 +4,9 @@
 ** Invokable.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "Invokable.h"
+#include "Runtime/Invokable.h"
 
 namespace ursine
 {

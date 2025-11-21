@@ -4,15 +4,15 @@
 ** MetaDataManager.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "MetaDataManager.h"
-#include "ReflectionParser.h"
+#include "Parser/MetaDataManager.h"
+#include "Parser/ReflectionParser.h"
 
-#include "Tokenizer/TokenType.h"
-#include "Tokenizer/Tokenizer.h"
+#include "Parser/Tokenizer/TokenType.h"
+#include "Parser/Tokenizer/Tokenizer.h"
 
-#include <boost/regex.hpp>
+#include <regex>
 
 #define TOKENS_WHITESPACE   ' ', '\r', '\n', '\t'
 #define TOKENS_NUMBER       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
@@ -69,32 +69,29 @@ std::string MetaDataManager::GetNativeString(const std::string &key) const
     if (search == m_properties.end( ))
         return "";
 
-    static const boost::regex quotedString(
+    static const std::regex quotedString(
         // opening quote
         "(?:\\s*\")"
         // actual string contents
         "([^\"]*)"
         // closing quote
-        "\"",
-        boost::regex::icase
+        "\""
     );
 
     auto &value = search->second;
     
-    auto flags = boost::match_default | boost::format_all;
+    //auto flags = std::match_default | std::format_default;
 
-    boost::match_results<std::string::const_iterator> match;
-
-    if (boost::regex_search( 
-            value.cbegin( ), 
-            value.cend( ), 
-            match, 
-            quotedString, 
-            flags 
-        )
-    )
+    auto words_it = std::sregex_iterator(
+        value.cbegin( ), 
+        value.cend( ), 
+        quotedString
+    );
+    auto words_end = std::sregex_iterator();
+    if (words_it != words_end)
     {
-        return match[ 1 ].str( );
+        std::smatch match = *words_it;
+        return match.str();
     }
 
     // couldn't find one
@@ -103,7 +100,7 @@ std::string MetaDataManager::GetNativeString(const std::string &key) const
 
 void MetaDataManager::CompileTemplateData(
     TemplateData &data, 
-    const ReflectionParser *context
+    ReflectionParser *context
 ) const
 {
     TemplateData propertyData { TemplateData::Type::List };
@@ -364,7 +361,7 @@ namespace
         {
             decltype(tokenizer)::SymbolTable symbols
             {
-                #include "Tokenizer/ConstructorTokenSymbols.inl"
+                #include "Parser/Tokenizer/ConstructorTokenSymbols.inl"
             };
 
             tokenizer.LoadSymbols( symbols );

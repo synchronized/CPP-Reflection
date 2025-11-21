@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "Cursor.h"
-#include "Namespace.h"
+#include "Parser/Cursor.h"
+#include "Parser/Namespace.h"
 
 class Invokable
 {

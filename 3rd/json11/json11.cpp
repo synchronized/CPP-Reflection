@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <limits>
+#include <cstdint>
 
 namespace json11 {
 
@@ -37,11 +38,20 @@ using std::make_shared;
 using std::initializer_list;
 using std::move;
 
+/* Helper for representing null - just a do-nothing struct, plus comparison
+ * operators so the helpers in JsonValue work. We can't use nullptr_t because
+ * it may not be orderable.
+ */
+struct NullStruct {
+    bool operator==(NullStruct) const { return true; }
+    bool operator<(NullStruct) const { return false; }
+};
+
 /* * * * * * * * * * * * * * * * * * * *
  * Serialization
  */
 
-static void dump(std::nullptr_t, string &out) {
+static void dump(NullStruct, string &out) {
     out += "null";
 }
 
@@ -142,7 +152,7 @@ protected:
 
     // Constructors
     explicit Value(const T &value) : m_value(value) {}
-    explicit Value(T &&value)      : m_value(move(value)) {}
+    explicit Value(T &&value)      : m_value(std::move(value)) {}
 
     // Get type tag
     Json::Type type() const override {
@@ -189,7 +199,7 @@ class JsonString final : public Value<Json::STRING, string> {
     const string &string_value() const override { return m_value; }
 public:
     explicit JsonString(const string &value) : Value(value) {}
-    explicit JsonString(string &&value)      : Value(move(value)) {}
+    explicit JsonString(string &&value)      : Value(std::forward<string>(value)) {}
 };
 
 class JsonArray final : public Value<Json::ARRAY, Json::array> {
@@ -197,7 +207,7 @@ class JsonArray final : public Value<Json::ARRAY, Json::array> {
     const Json & operator[](size_t i) const override;
 public:
     explicit JsonArray(const Json::array &value) : Value(value) {}
-    explicit JsonArray(Json::array &&value)      : Value(move(value)) {}
+    explicit JsonArray(Json::array &&value)      : Value(std::forward<Json::array>(value)) {}
 };
 
 class JsonObject final : public Value<Json::OBJECT, Json::object> {
@@ -205,12 +215,12 @@ class JsonObject final : public Value<Json::OBJECT, Json::object> {
     const Json & operator[](const string &key) const override;
 public:
     explicit JsonObject(const Json::object &value) : Value(value) {}
-    explicit JsonObject(Json::object &&value)      : Value(move(value)) {}
+    explicit JsonObject(Json::object &&value)      : Value(std::forward<Json::object>(value)) {}
 };
 
-class JsonNull final : public Value<Json::NUL, std::nullptr_t> {
+class JsonNull final : public Value<Json::NUL, NullStruct> {
 public:
-    JsonNull() : Value(nullptr) {}
+    JsonNull() : Value({}) {}
 };
 
 /* * * * * * * * * * * * * * * * * * * *
@@ -247,12 +257,12 @@ Json::Json(double value)               : m_ptr(make_shared<JsonDouble>(value)) {
 Json::Json(int value)                  : m_ptr(make_shared<JsonInt>(value)) {}
 Json::Json(bool value)                 : m_ptr(value ? statics().t : statics().f) {}
 Json::Json(const string &value)        : m_ptr(make_shared<JsonString>(value)) {}
-Json::Json(string &&value)             : m_ptr(make_shared<JsonString>(move(value))) {}
+Json::Json(string &&value)             : m_ptr(make_shared<JsonString>(std::forward<string>(value))) {}
 Json::Json(const char * value)         : m_ptr(make_shared<JsonString>(value)) {}
 Json::Json(const Json::array &values)  : m_ptr(make_shared<JsonArray>(values)) {}
-Json::Json(Json::array &&values)       : m_ptr(make_shared<JsonArray>(move(values))) {}
+Json::Json(Json::array &&values)       : m_ptr(make_shared<JsonArray>(std::forward<Json::array>(values))) {}
 Json::Json(const Json::object &values) : m_ptr(make_shared<JsonObject>(values)) {}
-Json::Json(Json::object &&values)      : m_ptr(make_shared<JsonObject>(move(values))) {}
+Json::Json(Json::object &&values)      : m_ptr(make_shared<JsonObject>(std::forward<Json::object>(values))) {}
 
 /* * * * * * * * * * * * * * * * * * * *
  * Accessors
@@ -291,6 +301,8 @@ const Json & JsonArray::operator[] (size_t i) const {
  */
 
 bool Json::operator== (const Json &other) const {
+    if (m_ptr == other.m_ptr)
+        return true;
     if (m_ptr->type() != other.m_ptr->type())
         return false;
 
@@ -298,6 +310,8 @@ bool Json::operator== (const Json &other) const {
 }
 
 bool Json::operator< (const Json &other) const {
+    if (m_ptr == other.m_ptr)
+        return false;
     if (m_ptr->type() != other.m_ptr->type())
         return m_ptr->type() < other.m_ptr->type();
 
@@ -346,13 +360,13 @@ struct JsonParser final {
      * Mark this parse as failed.
      */
     Json fail(string &&msg) {
-        return fail(move(msg), Json());
+        return fail(std::forward<string>(msg), Json());
     }
 
     template <typename T>
     T fail(string &&msg, const T err_ret) {
         if (!failed)
-            err = std::move(msg);
+            err = std::forward<string>(msg);
         failed = true;
         return err_ret;
     }
@@ -375,16 +389,12 @@ struct JsonParser final {
       if (str[i] == '/') {
         i++;
         if (i == str.size())
-          return fail("unexpected end of input inside comment", false);
+          return fail("unexpected end of input after start of comment", false);
         if (str[i] == '/') { // inline comment
           i++;
-          if (i == str.size())
-            return fail("unexpected end of input inside inline comment", false);
-          // advance until next line
-          while (str[i] != '\n') {
+          // advance until next line, or end of input
+          while (i < str.size() && str[i] != '\n') {
             i++;
-            if (i == str.size())
-              return fail("unexpected end of input inside inline comment", false);
           }
           comment_found = true;
         }
@@ -400,9 +410,6 @@ struct JsonParser final {
                 "unexpected end of input inside multi-line comment", false);
           }
           i += 2;
-          if (i == str.size())
-            return fail(
-              "unexpected end of input inside multi-line comment", false);
           comment_found = true;
         }
         else
@@ -421,6 +428,7 @@ struct JsonParser final {
         bool comment_found = false;
         do {
           comment_found = consume_comment();
+          if (failed) return;
           consume_whitespace();
         }
         while(comment_found);
@@ -434,8 +442,9 @@ struct JsonParser final {
      */
     char get_next_token() {
         consume_garbage();
+        if (failed) return static_cast<char>(0);
         if (i == str.size())
-            return fail("unexpected end of input", 0);
+            return fail("unexpected end of input", static_cast<char>(0));
 
         return str[i++];
     }
@@ -509,7 +518,7 @@ struct JsonParser final {
                 if (esc.length() < 4) {
                     return fail("bad \\u escape: " + esc, "");
                 }
-                for (int j = 0; j < 4; j++) {
+                for (size_t j = 0; j < 4; j++) {
                     if (!in_range(esc[j], 'a', 'f') && !in_range(esc[j], 'A', 'F')
                             && !in_range(esc[j], '0', '9'))
                         return fail("bad \\u escape: " + esc, "");
@@ -727,6 +736,8 @@ Json Json::parse(const string &in, string &err, JsonParse strategy) {
 
     // Check for any trailing garbage
     parser.consume_garbage();
+    if (parser.failed)
+        return Json();
     if (parser.i != in.size())
         return parser.fail("unexpected trailing " + esc(in[parser.i]));
 
@@ -743,10 +754,14 @@ vector<Json> Json::parse_multi(const string &in,
     vector<Json> json_vec;
     while (parser.i != in.size() && !parser.failed) {
         json_vec.push_back(parser.parse_json(0));
+        if (parser.failed)
+            break;
+
         // Check for another object
         parser.consume_garbage();
-        if (!parser.failed)
-            parser_stop_pos = parser.i;
+        if (parser.failed)
+            break;
+        parser_stop_pos = parser.i;
     }
     return json_vec;
 }
@@ -761,8 +776,10 @@ bool Json::has_shape(const shape & types, string & err) const {
         return false;
     }
 
+    const auto& obj_items = object_items();
     for (auto & item : types) {
-        if ((*this)[item.first].type() != item.second) {
+        const auto it = obj_items.find(item.first);
+        if (it == obj_items.cend() || it->second.type() != item.second) {
             err = "bad type for " + item.first + " in " + dump();
             return false;
         }

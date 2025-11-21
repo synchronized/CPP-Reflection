@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "ReflectionDatabase.h"
+#include "Runtime/ReflectionDatabase.h"
 
 #define DECLARE_REFLECTION_MODULE(module)                            \
     namespace meta_generated                                         \

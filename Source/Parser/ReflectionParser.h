@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include "ReflectionOptions.h"
+#include "Parser/ReflectionOptions.h"
 
-#include "Cursor.h"
-#include "Namespace.h"
+#include "Parser/Cursor.h"
+#include "Parser/Namespace.h"
 
-#include "Templates.h"
+#include "Parser/Templates.h"
 
-#include "Module/ModuleFile.h"
+#include "Parser/Module/ModuleFile.h"
 
 class Class;
 class External;
@@ -30,11 +30,12 @@ public:
     void Parse(void);
     void GenerateFiles(void);
 
-    MustacheTemplate LoadTemplate(const std::string &name) const;
+    std::string LoadTemplateContent(const std::string &name);
+    MustacheTemplate LoadTemplate(const std::string &name);
 
     TemplateData::PartialType LoadTemplatePartial(
         const std::string &name
-    ) const;
+    );
 
     void GenerateHeader(std::string &output) const;
     void GenerateSource(std::string &output) const;
@@ -84,4 +85,7 @@ private:
         const std::string &sourceHeader,
         const ModuleFile &file
     );
+
+public:
+    void dump();
 };

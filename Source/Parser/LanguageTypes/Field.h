@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "LanguageType.h"
+#include "Parser/LanguageTypes/LanguageType.h"
 
 class Class;
 
@@ -24,10 +24,10 @@ public:
     bool ShouldCompile(void) const;
     
     TemplateData CompileTemplate(
-        const ReflectionParser *context
+        ReflectionParser *context
     ) const override;
 
-private:
+public:
     bool m_isConst;
 
     bool m_hasExplicitGetter;

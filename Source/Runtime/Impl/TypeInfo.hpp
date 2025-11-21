@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "../Common/Compiler.h"
-#include "../TypeData.h"
-#include "../TypeID.h"
+#include "Common/Compiler.h"
+#include "Runtime/TypeData.h"
+#include "Runtime/TypeID.h"
 
 #if defined(COMPILER_MSVC)
 

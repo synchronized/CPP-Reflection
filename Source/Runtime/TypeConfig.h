@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "TypeID.h"
-#include "MetaTraits.h"
+#include "Runtime/TypeID.h"
+#include "Runtime/MetaTraits.h"
 
 #include <type_traits>
 

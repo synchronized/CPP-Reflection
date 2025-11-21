@@ -4,11 +4,11 @@
 ** ReflectionDatabase.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "ReflectionDatabase.h"
+#include "Runtime/ReflectionDatabase.h"
 
-#include "Type.h"
+#include "Runtime/Type.h"
 
 #define REGISTER_NATIVE_TYPE(type)                    \
     {                                                 \

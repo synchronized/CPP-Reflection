@@ -4,11 +4,11 @@
 ** VariantContainer.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "VariantContainer.h"
+#include "Runtime/VariantContainer.h"
 
-#include "Type.h"
+#include "Runtime/Type.h"
 
 #include <algorithm>
 

@@ -24,5 +24,8 @@ struct ReflectionOptions
 
     std::string templateDirectory;
 
+    std::string includesFile;
+    std::vector<std::string> definesList;
+
     std::vector<std::string> arguments;
 };

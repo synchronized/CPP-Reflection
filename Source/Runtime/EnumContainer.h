@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "EnumBase.h"
+#include "Runtime/EnumBase.h"
 
-#include "Variant.h"
+#include "Runtime/Variant.h"
 
 #include <unordered_map>
 
@@ -47,4 +47,4 @@ namespace ursine
     }
 }
 
-#include "Impl/EnumContainer.hpp"
+#include "Runtime/Impl/EnumContainer.hpp"

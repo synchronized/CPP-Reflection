@@ -4,24 +4,24 @@
 ** Type.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "Type.h"
-#include "TypeCreator.h"
+#include "Runtime/Type.h"
+#include "Runtime/TypeCreator.h"
 
-#include "Variant.h"
-#include "Enum.h"
+#include "Runtime/Variant.h"
+#include "Runtime/Enum.h"
 
-#include "Constructor.h"
-#include "Destructor.h"
-#include "Field.h"
-#include "Method.h"
-#include "Function.h"
+#include "Runtime/Constructor.h"
+#include "Runtime/Destructor.h"
+#include "Runtime/Field.h"
+#include "Runtime/Method.h"
+#include "Runtime/Function.h"
 
-#include "MetaManager.h"
-#include "RuntimeMetaProperties.h"
+#include "Runtime/MetaManager.h"
+#include "Runtime/RuntimeMetaProperties.h"
 
-#include "ReflectionDatabase.h"
+#include "Runtime/ReflectionDatabase.h"
 
 #include "Common/Logging.h"
 

@@ -20,4 +20,5 @@ namespace utils
 
         return (startA == endA) && (startB == endB);
     }
+
 }

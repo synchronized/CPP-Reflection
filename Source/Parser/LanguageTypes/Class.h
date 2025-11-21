@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "LanguageType.h"
+#include "Parser/LanguageTypes/LanguageType.h"
 
-#include "LanguageTypes/Constructor.h"
-#include "LanguageTypes/Field.h"
-#include "LanguageTypes/Global.h"
-#include "LanguageTypes/Method.h"
-#include "LanguageTypes/Function.h"
+#include "Parser/LanguageTypes/Constructor.h"
+#include "Parser/LanguageTypes/Field.h"
+#include "Parser/LanguageTypes/Global.h"
+#include "Parser/LanguageTypes/Method.h"
+#include "Parser/LanguageTypes/Function.h"
 
 struct BaseClass
 {
@@ -36,10 +36,10 @@ public:
     virtual bool ShouldCompile(void) const;
 
     TemplateData CompileTemplate(
-        const ReflectionParser *context
+        ReflectionParser *context
     ) const override;
     
-private:
+public:
     std::string m_name;
     std::string m_displayName;
     std::string m_qualifiedName;

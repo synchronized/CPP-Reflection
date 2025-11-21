@@ -4,9 +4,9 @@
 ** Global.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "Global.h"
+#include "Runtime/Global.h"
 
 namespace ursine
 {

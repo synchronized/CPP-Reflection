@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "InvokableConfig.h"
-#include "ArgumentConfig.h"
+#include "Runtime/InvokableConfig.h"
+#include "Runtime/ArgumentConfig.h"
 
 #include <vector>
 
@@ -37,4 +37,4 @@ namespace ursine
     }
 }
 
-#include "Impl/Invokable.hpp"
+#include "Runtime/Impl/Invokable.hpp"

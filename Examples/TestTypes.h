@@ -1,15 +1,15 @@
 #pragma once
 
-#include <Meta.h>
+#include <Runtime/Meta.h>
+#include <Runtime/Array.h>
 
 #include "TestProperties.h"
 
 #include <string>
 #include <vector>
+#include <iostream>
 
-#include <Array.h>
-
-enum TestEnum
+enum Meta(Enable) TestEnum
 {
     One,
     Two,
@@ -17,9 +17,9 @@ enum TestEnum
     Four,
     Five,
     Eighty = 80
-} Meta(Enable);
+};
 
-struct SoundEffect
+struct Meta(Enable) SoundEffect
 {
     Meta(Range(0.0f, 100.0f), Slider(SliderType::Horizontal))
     float volume;
@@ -28,9 +28,9 @@ struct SoundEffect
     {
         std::cout << "Loaded sound effect \"" << filename << "\"." << std::endl;
     }
-} Meta(Enable);
+};
 
-struct ComplexType
+struct Meta(Enable) ComplexType
 {
     std::string stringValue;
     int intValue;
@@ -44,4 +44,4 @@ struct ComplexType
     TestEnum enumValue;
 
     ComplexType(void) = default;
-} Meta(Enable);
+};

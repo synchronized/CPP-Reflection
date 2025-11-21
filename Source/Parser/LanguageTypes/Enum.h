@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "LanguageType.h"
+#include "Parser/LanguageTypes/LanguageType.h"
 
-#include "LanguageTypes/Global.h"
+#include "Parser/LanguageTypes/Global.h"
 
 class Enum : public LanguageType
 {
@@ -29,10 +29,10 @@ public:
     bool ShouldCompile(void) const;
     
     TemplateData CompileTemplate(
-        const ReflectionParser *context
+        ReflectionParser *context
     ) const override;
 
-private:
+public:
     std::string m_name;
     std::string m_displayName;
     std::string m_qualifiedName;

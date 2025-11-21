@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "CursorType.h"
+#include "Parser/CursorType.h"
 
 class Cursor
 {

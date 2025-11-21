@@ -6,21 +6,13 @@
 
 #pragma once
 
-#include "TypeConfig.h"
+#include "Runtime/TypeConfig.h"
 
-#include "../Common/Compiler.h"
+#include "Common/Compiler.h"
 
 #include <type_traits>
 
-#if defined(COMPILER_CLANG) || defined(COMPILER_GNU)
-
-#define IsTriviallyDefaultConstructible(x) std::has_trivial_default_constructor<x>::value
-
-#else
-
 #define IsTriviallyDefaultConstructible(x) std::is_trivially_default_constructible<x>::value
-
-#endif
 
 namespace ursine
 {
@@ -69,4 +61,4 @@ namespace ursine
     }
 }
 
-#include "Impl/TypeInfo.hpp"
+#include "Runtime/Impl/TypeInfo.hpp"

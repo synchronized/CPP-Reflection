@@ -4,9 +4,9 @@
 ** ReflectionModule.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "ReflectionModule.h"
+#include "Runtime/ReflectionModule.h"
 
 namespace ursine
 {

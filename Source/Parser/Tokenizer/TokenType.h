@@ -18,7 +18,7 @@ enum class ConstructorTokenType
     StringLiteral,
     SYMBOL_START,
 
-    #include "ConstructorTokenSymbols.inl"
+    #include "Parser/Tokenizer/ConstructorTokenSymbols.inl"
 
     SYMBOL_END
 };

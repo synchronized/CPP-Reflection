@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "FieldSetterBase.h"
+#include "Runtime/FieldSetterBase.h"
 
 namespace ursine
 {
@@ -21,4 +21,4 @@ namespace ursine
     }
 }
 
-#include "Impl/FieldSetter.hpp"
+#include "Runtime/Impl/FieldSetter.hpp"

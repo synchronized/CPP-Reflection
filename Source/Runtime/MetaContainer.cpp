@@ -4,10 +4,10 @@
 ** MetaContainer.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "MetaContainer.h"
-#include "MetaManager.h"
+#include "Runtime/MetaContainer.h"
+#include "Runtime/MetaManager.h"
 
 namespace ursine
 {

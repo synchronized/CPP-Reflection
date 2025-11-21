@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "MetaProperty.h"
+#include "Runtime/MetaProperty.h"
 
-#include "JsonConfig.h"
+#include "Runtime/JsonConfig.h"
 
 #include <string>
 #include <map>
@@ -61,4 +61,4 @@ namespace ursine
     }
 }
 
-#include "Impl/MetaManager.hpp"
+#include "Runtime/Impl/MetaManager.hpp"

@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "../Common/Logging.h"
+#include "Common/Logging.h"
 
-#include "../Variant.h"
-#include "../ArgumentConfig.h"
-#include "../Argument.h"
+#include "Runtime/Variant.h"
+#include "Runtime/ArgumentConfig.h"
+#include "Runtime/Argument.h"
 
 namespace ursine
 {

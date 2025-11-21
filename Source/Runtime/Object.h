@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "JsonConfig.h"
+#include "Runtime/JsonConfig.h"
 
 // Constructs a variant that wraps an object
 #define ObjectVariant(object) ursine::meta::Variant { object, ursine::meta::variant_policy::WrapObject( ) }

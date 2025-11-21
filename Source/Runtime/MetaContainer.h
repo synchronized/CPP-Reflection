@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "MetaManager.h"
+#include "Runtime/MetaManager.h"
 
 namespace ursine
 {

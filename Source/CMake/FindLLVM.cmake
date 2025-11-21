@@ -27,20 +27,16 @@ find_path(LLVM_INCLUDE_DIRS
     PATH_SUFFIXES "include"
 )
 
-if (LIBCLANG_USE_STATIC_LIBRARY)
-    # find static library directory
-    find_path(LLVM_LIBRARY_DIR
-        NAMES ${LIBCLANG_STATIC_LIBRARY_NAME}
-        PATHS ${LLVM_SEARCH_PATHS}
-        PATH_SUFFIXES "lib" "bin"
-    )
-endif ()
-
 # shared library directory
 find_path(LLVM_BINARY_DIR
     NAMES ${LIBCLANG_SHARED_LIBRARY_NAME}
     PATHS ${LLVM_SEARCH_PATHS}
     PATH_SUFFIXES "bin" "lib"
+)
+find_path(LLVM_LIBRARY_DIR
+    NAMES ${LIBCLANG_STATIC_LIBRARY_NAME}
+    PATHS ${LLVM_SEARCH_PATHS}
+    PATH_SUFFIXES "lib" "bin"
 )
 
 # unable to find everything
@@ -65,3 +61,16 @@ else ()
     # we can assume this is a unix system, in which case we link to the shared object file
     set(LIBCLANG_LIBRARY ${LIBCLANG_SHARED_LIBRARY})
 endif ()
+
+if(NOT TARGET LLVM::clang)
+    add_library(LLVM::clang SHARED IMPORTED)
+    set_target_properties(LLVM::clang PROPERTIES
+        IMPORTED_LOCATION "${LIBCLANG_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${LLVM_INCLUDE_DIRS}"
+    )
+    if(WIN32 AND NOT LIBCLANG_USE_STATIC_LIBRARY)
+        set_target_properties(LLVM::clang PROPERTIES
+            IMPORTED_IMPLIB "${LLVM_LIBRARY_DIR}/${LIBCLANG_STATIC_LIBRARY_NAME}"
+        )
+    endif()
+endif()

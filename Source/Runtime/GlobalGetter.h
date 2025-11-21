@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "GlobalGetterBase.h"
+#include "Runtime/GlobalGetterBase.h"
 
 namespace ursine
 {
@@ -21,4 +21,4 @@ namespace ursine
     }
 }
 
-#include "Impl/GlobalGetter.hpp"
+#include "Runtime/Impl/GlobalGetter.hpp"

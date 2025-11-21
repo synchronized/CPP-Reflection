@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "LanguageTypes/Class.h"
+#include "Parser/LanguageTypes/Class.h"
 
 class External : public Class
 {

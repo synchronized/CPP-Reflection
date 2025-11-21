@@ -1,10 +1,3 @@
-cmake_minimum_required(VERSION 2.8.3)
-
-project(MetaParser CXX)
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../CMake")
-
-include(Precompiled)
 
 set(HEADER_FILES
     Cursor.h
@@ -64,100 +57,74 @@ set(SOURCE_FILES
     LanguageTypes/Method.cpp
 )
 
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_NO_SYSTEM_PATHS ON)
-set(Boost_ALL_NO_LIB ON)
-
-# disable auto-linking
-add_definitions(-DBOOST_ALL_NO_LIB)
-
-find_package(Boost 1.59.0 REQUIRED 
-    COMPONENTS 
-    system
-    filesystem
-    program_options
-    regex
-)
-
-# add boost includes
-include_directories(${Boost_INCLUDE_DIRS})
-
 find_package(LLVM REQUIRED)
 
 # add LLVM includes
-include_directories(${LLVM_INCLUDE_DIRS})
+set(TARGET_NAME MetaParser)
+add_executable(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
-# allow use of Common and Library directories
-include_directories(.)
-include_directories(..)
-include_directories(../Common)
-include_directories(../Common/Lib)
+target_include_directories(${TARGET_NAME} PRIVATE ${CPP_REFLECTION_SOURCE_DIR})
+
+target_link_libraries(${TARGET_NAME} PRIVATE json11)
+target_link_libraries(${TARGET_NAME} PRIVATE mustache)
+target_link_libraries(${TARGET_NAME} PRIVATE fmt::fmt-header-only)
+target_link_libraries(${TARGET_NAME} PRIVATE LLVM::clang)
+target_link_libraries(${TARGET_NAME} PRIVATE argparse::argparse)
 
 # header files are superflous, but some IDEs (Visual Studio) don't include
 # them in the solution explorer without them being added to the list of sources
-add_executable(MetaParser ${HEADER_FILES} ${SOURCE_FILES})
 
-link_directories(${LLVM_LIBRARY_DIR})
+target_compile_options(${TARGET_NAME} PUBLIC
+        $<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus>
+        $<$<CXX_COMPILER_ID:MSVC>:/Zc:preprocessor>
+        )
+set_compiler_warnings(${TARGET_NAME})
 
-# statically link with Boost & LibClang
-target_link_libraries(MetaParser ${Boost_LIBRARIES} ${LIBCLANG_LIBRARY})
+set_target_properties(${TARGET_NAME} PROPERTIES
+        CXX_STANDARD 20
+        DEBUG_POSTFIX ${CPP_REFLECTION_DEBUG_POSTFIX}
+        FOLDER "CppReflection/Core"
+        )
 
-set_precompiled_header(MetaParser Precompiled.h Precompiled.cpp)
+if (USE_PCH)
+    target_precompile_headers(${TARGET_NAME} PRIVATE "Precompiled.h")
+endif()
 
-if (MSVC)
-    # disable security warnings
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)
-
-    target_compile_options(MetaParser
-        PUBLIC
-        # treat warnings as errors
-        /WX 
-        # multi process compilation
-        /MP
-    )
-
-    # detect version of Visual Studio
-    if (MSVC10)
-        set(VS_VERSION "10")
-    elseif (MSVC11)
-        set(VS_VERSION "11")
-    elseif (MSVC12)
-        set(VS_VERSION "12")
-    elseif (MSVC14)
-        set(VS_VERSION "14")
-    endif()
-
-    # cmake is gross sometimes
-    set(_PROGRAM_FILES_x86 "ProgramFiles(x86)")
-    set(PROGRAM_FILES_x86 "$ENV{${_PROGRAM_FILES_x86}}")
-    set(SYSTEM_INCLUDES "${PROGRAM_FILES_x86}/Microsoft Visual Studio ${VS_VERSION}.0/VC/include")
-
-    # normalize slashes
-    string(REPLACE "\\" "/" SYSTEM_INCLUDES "${SYSTEM_INCLUDES}")
-else ()
-    target_compile_options(MetaParser
-        PUBLIC -std=c++11
-    )
-
-    set(SYSTEM_INCLUDES "/usr/include/c++/${CMAKE_CXX_COMPILER_VERSION}")
-endif ()
-
-if (SYSTEM_INCLUDES)
-    # visual studio seems to have issues with escape characters in post build commands
-    set_property(TARGET MetaParser APPEND PROPERTY COMPILE_DEFINITIONS SYSTEM_INCLUDE_DIRECTORY="${SYSTEM_INCLUDES}")
-else ()
-    message(FATAL_ERROR "System include directories not implemented for this compiler.")
-endif ()
 
 # copy resources on post build
 add_custom_command(TARGET MetaParser POST_BUILD
     # mustache templates directory
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_LIST_DIR}/../../Resources"
+        "${CPP_REFLECTION_RESOURCES_DIR}"
         $<TARGET_FILE_DIR:MetaParser>
     # LibClang shared library
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${LIBCLANG_SHARED_LIBRARY}
         $<TARGET_FILE_DIR:MetaParser>
 )
+
+# 创建一个小的 CMake 项目来探测包含路径
+function(detect_include_paths)
+    # 创建一个临时目录
+    set(temp_dir "${CMAKE_BINARY_DIR}/include_detect")
+    file(MAKE_DIRECTORY "${temp_dir}")
+    
+    # 创建测试 CMakeLists.txt
+    file(WRITE "${temp_dir}/main.cpp" "int main() { return 0; }")
+    
+    # 执行配置
+    execute_process(
+        #clang++ -E -Wp -v -xc++ main.cpp
+        COMMAND ${CMAKE_COMMAND} -S "${temp_dir}" -B "${temp_dir}"
+        OUTPUT_VARIABLE config_output
+        ERROR_VARIABLE config_error
+    )
+    
+    # 清理
+    file(REMOVE_RECURSE "${temp_dir}")
+    
+    message("${config_output}")
+    message("${config_error}")
+endfunction()
+
+#detect_include_paths()

@@ -4,11 +4,11 @@
 ** Cursor.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "Cursor.h"
+#include "Parser/Cursor.h"
 
-#include "MetaUtils.h"
+#include "Parser/MetaUtils.h"
 
 Cursor::Cursor(const CXCursor &handle)
     : m_handle( handle ) { }

@@ -6,10 +6,16 @@
 
 #pragma once
 
-#include "Cursor.h"
-#include "Namespace.h"
+#include <filesystem>
+#include <vector>
+#include <string>
 
-#include "Mustache.h"
+#include <Mustache.h>
+
+#include "Parser/Cursor.h"
+#include "Parser/Namespace.h"
+
+namespace fs = std::filesystem;
 
 namespace utils
 {
@@ -32,15 +38,23 @@ namespace utils
     void LoadText(const std::string &filename, std::string &output);
     void WriteText(const std::string &filename, const std::string &text);
 
-    boost::filesystem::path MakeRelativePath(
-        const boost::filesystem::path &from, 
-        const boost::filesystem::path &to
+    fs::path MakeRelativePath(
+        const fs::path &from, 
+        const fs::path &to
     );
 
     void FatalError(const std::string &error);
 
     template<typename A, typename B>
     bool RangeEqual(A startA, A endA, B startB, B endB);
+
+    /** splits str into vector of substrings, str is not changed */
+    std::vector<std::string> StringSplit(std::string str, const std::string delim);
+
+    /** joins a vector of strings into a single string */
+    std::string StringJoin(const std::vector<std::string> &strs, const std::string delim);
+
+    bool StringStartWith(const std::string& content, const std::string& start);
 }
 
-#include "MetaUtils.hpp"
+#include "Parser/MetaUtils.hpp"

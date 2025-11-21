@@ -4,9 +4,9 @@
 ** Enum.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "LanguageTypes/Enum.h"
+#include "Parser/LanguageTypes/Enum.h"
 
 Enum::Value::Value(Enum *parent, const Cursor &cursor)
     : key( cursor.GetDisplayName( ) )
@@ -49,7 +49,7 @@ bool Enum::ShouldCompile(void) const
     return isAccessible( );
 }
 
-TemplateData Enum::CompileTemplate(const ReflectionParser *context) const
+TemplateData Enum::CompileTemplate(ReflectionParser *context) const
 {
     TemplateData data { TemplateData::Type::Object };
 

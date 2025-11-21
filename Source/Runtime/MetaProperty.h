@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "Object.h"
+#include "Runtime/Object.h"
 
-#include "Macros.h"
+#include "Runtime/Macros.h"
 
 namespace ursine 
 { 
@@ -160,4 +160,4 @@ public:
 
 #pragma endregion
 
-#include "Impl/MetaProperty.hpp"
+#include "Runtime/Impl/MetaProperty.hpp"

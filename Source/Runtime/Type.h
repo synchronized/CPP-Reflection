@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "Macros.h"
+#include "Runtime/Macros.h"
 
-#include "TypeID.h"
-#include "TypeConfig.h"
-#include "InvokableConfig.h"
-#include "ArgumentConfig.h"
-#include "JsonConfig.h"
+#include "Runtime/TypeID.h"
+#include "Runtime/TypeConfig.h"
+#include "Runtime/InvokableConfig.h"
+#include "Runtime/ArgumentConfig.h"
+#include "Runtime/JsonConfig.h"
 
 #include <string>
 #include <vector>
@@ -414,4 +414,4 @@ namespace ursine
     }
 }
 
-#include "Impl/Type.hpp"
+#include "Runtime/Impl/Type.hpp"

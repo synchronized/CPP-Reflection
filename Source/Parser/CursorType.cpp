@@ -4,9 +4,9 @@
 ** CursorType.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Parser/Precompiled.h"
 
-#include "CursorType.h"
+#include "Parser/CursorType.h"
 
 CursorType::CursorType(const CXType &handle)
     : m_handle( handle )

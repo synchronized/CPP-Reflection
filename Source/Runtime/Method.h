@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include "MetaContainer.h"
+#include "Runtime/MetaContainer.h"
 
-#include "Invokable.h"
+#include "Runtime/Invokable.h"
 
-#include "Variant.h"
-#include "Argument.h"
+#include "Runtime/Variant.h"
+#include "Runtime/Argument.h"
 
-#include "MethodInvoker.h"
+#include "Runtime/MethodInvoker.h"
 
 #include <vector>
 #include <unordered_map>
@@ -73,4 +73,4 @@ namespace ursine
     }
 }
 
-#include "Impl/Method.hpp"
+#include "Runtime/Impl/Method.hpp"

@@ -4,11 +4,11 @@
 ** TypeData.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "TypeData.h"
+#include "Runtime/TypeData.h"
 
-#include "ReflectionDatabase.h"
+#include "Runtime/ReflectionDatabase.h"
 
 namespace ursine
 {

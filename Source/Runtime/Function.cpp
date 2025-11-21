@@ -4,9 +4,9 @@
 ** Function.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "Function.h"
+#include "Runtime/Function.h"
 
 #include "Common/Logging.h"
 

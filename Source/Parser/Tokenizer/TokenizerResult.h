@@ -36,4 +36,4 @@ private:
     TokenList m_tokens;
 };
 
-#include "Impl/TokenizerResult.hpp"
+#include "Parser/Tokenizer/Impl/TokenizerResult.hpp"

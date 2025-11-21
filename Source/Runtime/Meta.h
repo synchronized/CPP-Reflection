@@ -6,26 +6,26 @@
 
 #pragma once
 
-#include "Macros.h"
+#include "Runtime/Macros.h"
 
-#include "MetaProperty.h"
+#include "Runtime/MetaProperty.h"
 
 #ifndef __REFLECTION_PARSER__
 
-#include "Object.h"
+#include "Runtime/Object.h"
 
-#include "Variant.h"
+#include "Runtime/Variant.h"
 
-#include "Type.h"
+#include "Runtime/Type.h"
 
-#include "MetaManager.h"
+#include "Runtime/MetaManager.h"
 
-#include "Enum.h"
-#include "Constructor.h"
-#include "Destructor.h"
-#include "Field.h"
-#include "Method.h"
-#include "Function.h"
-#include "Global.h"
+#include "Runtime/Enum.h"
+#include "Runtime/Constructor.h"
+#include "Runtime/Destructor.h"
+#include "Runtime/Field.h"
+#include "Runtime/Method.h"
+#include "Runtime/Function.h"
+#include "Runtime/Global.h"
 
 #endif

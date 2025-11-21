@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "MetaContainer.h"
+#include "Runtime/MetaContainer.h"
 
-#include "Variant.h"
+#include "Runtime/Variant.h"
 
-#include "FieldGetter.h"
-#include "FieldSetter.h"
+#include "Runtime/FieldGetter.h"
+#include "Runtime/FieldSetter.h"
 
 namespace ursine
 {
@@ -50,6 +50,7 @@ namespace ursine
         private:
             friend struct TypeData;
 
+        public:
             Type m_type;
             Type m_classType;
 

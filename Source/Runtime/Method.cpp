@@ -4,9 +4,9 @@
 ** Method.cpp
 ** --------------------------------------------------------------------------*/
 
-#include "Precompiled.h"
+#include "Runtime/Precompiled.h"
 
-#include "Method.h"
+#include "Runtime/Method.h"
 
 #include "Common/Logging.h"
 
