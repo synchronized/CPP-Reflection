@@ -128,7 +128,7 @@ void ReflectionParser::Parse(void)
 void ReflectionParser::GenerateFiles(void)
 {
     fs::path sourceRootDirectory( m_options.sourceRoot );
-    fs::path outputFileDirectory( m_options.outputModuleFileDirectory );
+    fs::path outputFileDirectory( m_options.outputDirectory );
 
     m_moduleFileHeaderTemplate = LoadTemplate( kTemplateModuleFileHeader );
 
@@ -156,7 +156,7 @@ void ReflectionParser::GenerateFiles(void)
 
     TemplateData moduleFilesData { TemplateData::Type::List };
 
-    fs::path metaCacheFileName = m_options.outputModuleFileDirectory;
+    fs::path metaCacheFileName = m_options.outputDirectory;
 
     metaCacheFileName /= ".meta-cache";
 
@@ -191,7 +191,7 @@ void ReflectionParser::GenerateFiles(void)
         TemplateData moduleFileData { TemplateData::Type::Object };
 
         moduleFileData[ "name" ] = file.second.name;
-        moduleFileData[ "header" ] = outputFileHeader.string( );
+        moduleFileData[ "header" ] = utils::MakeTempPath(outputFileHeader, m_options.sourceRoot) ;
 
         moduleFilesData << moduleFileData;
 
@@ -261,7 +261,8 @@ void ReflectionParser::GenerateFiles(void)
 
         COMPILE_TYPE_TEMPLATES( sourceData, "external", m_externals );
 
-        fs::path sourcePath( m_options.outputModuleSource );
+        fs::path sourcePath( m_options.outputDirectory );
+        sourcePath = sourcePath / m_options.outputModuleSourceFileName;
 
         fs::create_directory( sourcePath.parent_path( ) );
 
@@ -499,8 +500,8 @@ void ReflectionParser::addGlobalTemplateData(TemplateData &data)
     data[ "version" ] = kMetaGeneratorVersion;
     data[ "targetName" ] = m_options.targetName;
     data[ "inputSourceFile" ] = m_options.inputSourceFile;
-    data[ "moduleHeaderFile" ] = m_options.moduleHeaderFile;
-    data[ "outputModuleSourceFile" ] = m_options.outputModuleSource;
+    data[ "moduleHeaderFile" ] = utils::MakeTempPath(m_options.moduleHeaderFile, m_options.sourceRoot);
+    //data[ "outputModuleSourceFile" ] = m_options.outputModuleSource;
 
     data[ "usingPrecompiledHeader" ] =
         utils::TemplateBool( !m_options.precompiledHeader.empty( ) );
@@ -538,8 +539,8 @@ void ReflectionParser::generateModuleFile(
         addGlobalTemplateData( sourceData );
 
         sourceData[ "moduleFileName" ] = file.name;
-        sourceData[ "moduleFileSourceHeader" ] = sourceHeader;
-        sourceData[ "moduleFileHeader" ] = fileHeader.string( );
+        sourceData[ "moduleFileSourceHeader" ] = utils::MakeTempPath(sourceHeader, m_options.sourceRoot);
+        sourceData[ "moduleFileHeader" ] = utils::MakeTempPath(fileHeader, m_options.sourceRoot);
 
         COMPILE_TYPE_TEMPLATES( sourceData, "class", file.classes );
         COMPILE_TYPE_TEMPLATES( sourceData, "global", file.globals );
@@ -568,39 +569,47 @@ void ReflectionParser::dump()
             std::cout << "            {" << std::endl;
             std::cout << "                class_name: " << clazz->m_name << std::endl;
 
-            std::cout << "                fields: [" << std::endl;
-            for (auto& field : clazz->m_fields) {
-                std::cout << "                    {" << std::endl;
-                std::cout << "                        type: " << field->m_type << std::endl;
-                std::cout << "                        name: " << field->m_name << std::endl;
-                std::cout << "                    }," << std::endl;
+            if (clazz->m_fields.size() > 0) {
+                std::cout << "                fields: [" << std::endl;
+                for (auto& field : clazz->m_fields) {
+                    std::cout << "                    {" << std::endl;
+                    std::cout << "                        type: " << field->m_type << std::endl;
+                    std::cout << "                        name: " << field->m_name << std::endl;
+                    std::cout << "                    }," << std::endl;
+                }
+                std::cout << "                ]" << std::endl;
             }
-            std::cout << "                ]" << std::endl;
 
-            std::cout << "                staticFields: [" << std::endl;
-            for (auto& field : clazz->m_staticFields) {
-                std::cout << "                    {" << std::endl;
-                std::cout << "                        type: " << field->m_type << std::endl;
-                std::cout << "                        name: " << field->m_name << std::endl;
-                std::cout << "                    }," << std::endl;
+            if (clazz->m_staticFields.size() > 0) {
+                std::cout << "                staticFields: [" << std::endl;
+                for (auto& field : clazz->m_staticFields) {
+                    std::cout << "                    {" << std::endl;
+                    std::cout << "                        type: " << field->m_type << std::endl;
+                    std::cout << "                        name: " << field->m_name << std::endl;
+                    std::cout << "                    }," << std::endl;
+                }
+                std::cout << "                ]" << std::endl;
             }
-            std::cout << "                ]" << std::endl;
 
-            std::cout << "                method: [" << std::endl;
-            for (auto& method : clazz->m_methods) {
-                std::cout << "                    {" << std::endl;
-                std::cout << "                        name: " << method->m_name << std::endl;
-                std::cout << "                    }," << std::endl;
+            if (clazz->m_methods.size() > 0) {
+                std::cout << "                method: [" << std::endl;
+                for (auto& method : clazz->m_methods) {
+                    std::cout << "                    {" << std::endl;
+                    std::cout << "                        name: " << method->m_name << std::endl;
+                    std::cout << "                    }," << std::endl;
+                }
+                std::cout << "                ]" << std::endl;
             }
-            std::cout << "                ]" << std::endl;
 
-            std::cout << "                staticMethods: [" << std::endl;
-            for (auto& func : clazz->m_staticMethods) {
-                std::cout << "                    {" << std::endl;
-                std::cout << "                        name: " << func->m_name << std::endl;
-                std::cout << "                    }," << std::endl;
+            if (clazz->m_staticMethods.size() > 0) {
+                std::cout << "                staticMethods: [" << std::endl;
+                for (auto& func : clazz->m_staticMethods) {
+                    std::cout << "                    {" << std::endl;
+                    std::cout << "                        name: " << func->m_name << std::endl;
+                    std::cout << "                    }," << std::endl;
+                }
+                std::cout << "                ]" << std::endl;
             }
-            std::cout << "                ]" << std::endl;
 
             std::cout << "            }," << std::endl;
         }

@@ -45,12 +45,12 @@ int main(int argc, char *argv[])
     program.add_argument("--module-header")
         .help("Header file that declares this reflection module.")
         .store_into(options.moduleHeaderFile);
-    program.add_argument("--out-source")
+    program.add_argument("--out-source-filename")
         .help("Output generated C++ module source file.")
-        .store_into(options.outputModuleSource);
+        .store_into(options.outputModuleSourceFileName);
     program.add_argument("--out-dir")
         .help("Output directory for generated C++ module file, header/source files.")
-        .store_into(options.outputModuleFileDirectory);
+        .store_into(options.outputDirectory);
     program.add_argument("--pch")
         .help("Optional name of the precompiled header file for the project.")
         .store_into(options.precompiledHeader);
@@ -75,6 +75,14 @@ int main(int argc, char *argv[])
     {
 
         program.parse_args(argc, argv);
+
+        if (options.displayDiagnostics) {
+            std::cout << std::endl;
+            std::cout << "argv: " << std::endl;
+            for (std::size_t i=0; i<argc; i++) {
+                std::cout << "    \"" << argv[i] << "\"" << std::endl;
+            }
+        }
 
         parse(options);
     }
@@ -110,6 +118,10 @@ void parse(ReflectionOptions &options)
         "-Wno-pragma-once-outside-header"
     } };
 
+    fs::path outputDir = fs::path(options.outputDirectory);
+    if (!outputDir.is_absolute()) {
+        options.outputDirectory = (fs::path(options.sourceRoot) / outputDir).string();
+    }
     if (fs::exists(options.includesFile)) 
     {
         std::ifstream includesFile( options.includesFile );
@@ -133,7 +145,10 @@ void parse(ReflectionOptions &options)
     ReflectionParser parser( options );
 
     parser.Parse( );
-    parser.dump();
+
+    if (options.displayDiagnostics) {
+        parser.dump();
+    }
 
     try
     {

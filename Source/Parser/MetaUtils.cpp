@@ -166,6 +166,11 @@ namespace utils
         return finalPath;
     }
 
+    std::string MakeTempPath(const fs::path from, const fs::path to) {
+        //return from.string();
+        return StringReplace(fs::relative(from, to).string(), "\\", "/");
+    }
+
     void FatalError(const std::string &error)
     {
         std::cerr << "Error: " << error << std::endl;
@@ -204,5 +209,23 @@ namespace utils
 
     bool StringStartWith(const std::string& content, const std::string& start) {
         return (content.rfind(start, 0) == 0);
+    }
+
+    std::string StringReplace(const std::string& _source_string, std::string sub_string, const std::string new_string)
+    {
+        std::string source_string = _source_string;
+        std::string::size_type pos = 0;
+        while ((pos = source_string.find(sub_string)) != std::string::npos)
+        {
+            source_string.replace(pos, sub_string.length(), new_string);
+        }
+        return source_string;
+    }
+
+    std::string StringReplace(std::string& _source_string, char taget_char, const char new_char)
+    {
+        std::string source_string = _source_string;
+        std::replace(source_string.begin(), source_string.end(), taget_char, new_char);
+        return source_string;
     }
 }

@@ -43,6 +43,8 @@ namespace utils
         const fs::path &to
     );
 
+    std::string MakeTempPath(const fs::path from, const fs::path to);
+
     void FatalError(const std::string &error);
 
     template<typename A, typename B>
@@ -55,6 +57,10 @@ namespace utils
     std::string StringJoin(const std::vector<std::string> &strs, const std::string delim);
 
     bool StringStartWith(const std::string& content, const std::string& start);
+
+    std::string StringReplace(const std::string& source_string, std::string sub_string, const std::string new_string);
+
+    std::string StringReplace(const std::string& source_string, char taget_char, const char new_char);
 }
 
 #include "Parser/MetaUtils.hpp"

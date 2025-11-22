@@ -3,7 +3,7 @@
 #include "TestTypes.h"
 #include "TestProperties.h"
 
-#include "TypeCreator.h"
+#include "Runtime/TypeCreator.h"
 
 using namespace ursine::meta;
 

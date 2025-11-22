@@ -6,10 +6,14 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
 struct ReflectionOptions
 {
     bool forceRebuild;
     bool displayDiagnostics;
+    bool verbose;
 
     std::string targetName;
 
@@ -17,8 +21,8 @@ struct ReflectionOptions
     std::string inputSourceFile;
     std::string moduleHeaderFile;
 
-    std::string outputModuleSource;
-    std::string outputModuleFileDirectory;
+    std::string outputModuleSourceFileName;
+    std::string outputDirectory; //输出路径
 
     std::string precompiledHeader;
 

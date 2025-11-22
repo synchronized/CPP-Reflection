@@ -272,47 +272,6 @@ macro(enable_rtti _ENABLE)
   endif()
 endmacro()
 
-
-####################################################################################
-# Returns the name of the used compiler.
-# _COMPILER_NAME
-####################################################################################
-function(getCompilerName _COMPILER_NAME)
-  if(MSVC_TOOLSET_VERSION EQUAL 80)
-    set(COMPILER_NAME "vs2005")
-  elseif(MSVC_TOOLSET_VERSION EQUAL 90)
-    set(COMPILER_NAME "vs2008")
-  elseif(MSVC_TOOLSET_VERSION EQUAL 100)
-    set(COMPILER_NAME "vs2010")
-  elseif(MSVC_TOOLSET_VERSION EQUAL 110)
-    set(COMPILER_NAME "vs2012")
-  elseif(MSVC_TOOLSET_VERSION EQUAL 120)
-    set(COMPILER_NAME "vs2013")
-  elseif(MSVC_TOOLSET_VERSION EQUAL 140)
-    set(COMPILER_NAME "vs2015")
-  elseif(MSVC_TOOLSET_VERSION EQUAL 141)
-    set(COMPILER_NAME "vs2017")
-  elseif(MSVC_TOOLSET_VERSION EQUAL 142)
-    set(COMPILER_NAME "vs2019")
-  elseif(MSVC_TOOLSET_VERSION EQUAL 143)
-    set(COMPILER_NAME "vs2022")
-  elseif(CMAKE_COMPILER_IS_GNUCXX)
-    set(COMPILER_NAME "gcc")
-    if(WIN32)
-      execute_process(COMMAND "${CMAKE_CXX_COMPILER}" "-dumpversion" OUTPUT_VARIABLE GCC_VERSION_OUTPUT)
-      string(REGEX REPLACE "([0-9]+\\.[0-9]+).*" "\\1" GCC_VERSION "${GCC_VERSION_OUTPUT}")
-      set(COMPILER_NAME ${COMPILER_NAME}${GCC_VERSION})
-    endif()
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-     set(COMPILER_NAME "clang")
-  else()
-    message(WARNING "Can not retrieve compiler name!")
-    return()
-  endif()
-
-  set(${_COMPILER_NAME} ${COMPILER_NAME} PARENT_SCOPE)
-endfunction()
-
 ####################################################################################
 # This will install the PDB files also into the "bin" folder of the installation directory
 # _TARGET_NAME The name of the target
@@ -335,18 +294,6 @@ macro(getenv_path VAR)
    if (ENV_${VAR})
      string( REGEX REPLACE "\\\\" "/" ENV_${VAR} ${ENV_${VAR}} )
    endif ()
-endmacro()
-
-macro(generateLibraryVersionVariables MAJOR MINOR PATCH PRODUCT_NAME PRODUCT_CPY_RIGHT PRODUCT_LICENSE)
-  set(LIBRARY_VERSION_MAJOR ${MAJOR})
-  set(LIBRARY_VERSION_MINOR ${MINOR})
-  set(LIBRARY_VERSION_PATCH ${PATCH})
-  set(LIBRARY_VERSION ${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH})
-  set(LIBRARY_VERSION_STR "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
-  math(EXPR LIBRARY_VERSION_CALC "${LIBRARY_VERSION_MAJOR}*1000 + ${LIBRARY_VERSION_MINOR}*100 + ${LIBRARY_VERSION_PATCH}")
-  set(LIBRARY_PRODUCT_NAME ${PRODUCT_NAME})
-  set(LIBRARY_COPYRIGHT ${PRODUCT_CPY_RIGHT})
-  set(LIBRARY_LICENSE ${PRODUCT_LICENSE})
 endmacro()
 
 function(get_latest_supported_cxx CXX_STANDARD)
@@ -424,3 +371,79 @@ function(get_latest_supported_cxx CXX_STANDARD)
     set(${CXX_STANDARD} ${MAX_CXX_STD} PARENT_SCOPE)
 endfunction()
 
+# 创建文件生成函数
+function(create_file_target target_name output_file content)
+    # 创建生成脚本
+    set(script_content "
+cmake_minimum_required(VERSION 3.18)
+file(WRITE \"${output_file}\" \"${content}\")
+message(STATUS \"Generated: ${output_file}\")
+")
+    
+    # 写入临时脚本
+    set(script_file ${CMAKE_BINARY_DIR}/cmake/generate_${target_name}.cmake)
+    file(WRITE ${script_file} "${script_content}")
+    
+    # 创建自定义目标
+    add_custom_target(${target_name}
+        COMMAND ${CMAKE_COMMAND} -P ${script_file}
+        COMMENT "Generating ${output_file}"
+        VERBATIM
+    )
+endfunction()
+
+#收集目标头文件(在配置时)
+function(collect_dependency_target_recursive_impl target result visited)
+    list(APPEND ${visited} ${target})
+    
+    # 递归处理依赖
+    get_target_property(link_libs ${target} INTERFACE_LINK_LIBRARIES)
+    if(NOT link_libs)
+        get_target_property(link_libs ${target} LINK_LIBRARIES)
+    endif()
+    
+    foreach(lib ${link_libs})
+        if(TARGET ${lib})
+            if(NOT "${lib}" IN_LIST "${visited}")
+                list(APPEND ${result} ${lib})
+                collect_dependency_target_recursive_impl(${lib} ${result} "${visited}")
+            endif()
+        endif()
+    endforeach()
+    
+    set(${result} "${${result}}" PARENT_SCOPE)
+endfunction()
+
+function(collect_dependency_target_recursive target result)
+    set(visited "")
+    collect_dependency_target_recursive_impl(${target} ${result} visited)
+    list(REMOVE_DUPLICATES ${result})
+    set(${result} "${${result}}" PARENT_SCOPE)
+endfunction()
+
+#收集目标头文件(在配置时)
+function(collect_includes_recursive target result)
+
+    collect_dependency_target_recursive(${target} OUT_LIBS)
+    list(APPEND OUT_LIBS ${target})
+    
+    # 获取接口包含目录
+    foreach(target_item ${OUT_LIBS})
+        get_target_property(includes ${target_item} INCLUDE_DIRECTORIES)
+        get_target_property(interface_includes ${target_item} INTERFACE_INCLUDE_DIRECTORIES)
+        # 获取系统包含目录
+        get_target_property(system_includes ${target_item} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
+        if(includes)
+            list(APPEND ${result} ${includes})
+        endif()
+        if(interface_includes)
+            list(APPEND ${result} ${interface_includes})
+        endif()
+        if(system_includes)
+            list(APPEND ${result} ${system_includes})
+        endif()
+    endforeach()
+    
+    list(REMOVE_DUPLICATES ${result})
+    set(${result} "${${result}}" PARENT_SCOPE)
+endfunction()

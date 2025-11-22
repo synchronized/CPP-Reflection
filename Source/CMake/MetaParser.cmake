@@ -73,7 +73,7 @@ function(meta_parser_build)
         SOURCE_ROOT
         SOURCE_FILE
         MODULE_HEADER
-        MODULE_SOURCE_FILE
+        MODULE_SOURCE_FILE_NAME
         GENERATED_DIR
         PCH_NAME
         PARSER_EXECUTABLE
@@ -83,17 +83,14 @@ function(meta_parser_build)
     set(MULTI_VALUE_ARGS 
         DEFINES
         INCLUDES
-        GENERATED_FILES
-        HEADER_FILES
     )
 
     cmake_parse_arguments(BUILD_META "" "${ONE_VALUE_ARGS}" "${MULTI_VALUE_ARGS}" ${ARGN})
 
-    # 获取目标依赖库的头文件路径
-    #set(include_genex "$<TARGET_PROPERTY:${BUILD_META_TARGET},INTERFACE_INCLUDE_DIRECTORIES>")
-    # 获取目标依赖库的头文件路径 + 自身定义的头文件路径
-    set(include_genex "$<TARGET_PROPERTY:${BUILD_META_TARGET},INCLUDE_DIRECTORIES>")
-    
+    if (IS_ABSOLUTE ${BUILD_META_GENERATED_DIR})
+        message(FATAL_ERROR "生成目录必须相对与源文件路径 GENERATED_DIR: ${BUILD_META_GENERATED_DIR}")
+    endif ()
+
     # 处理全局头文件路径和传入参数的头文件路径
     set(RAW_INCLUDES ${GLOBAL_META_INCLUDES} ${BUILD_META_INCLUDES})
     set(RAW_INCLUDES_CONTENT "")
@@ -104,13 +101,15 @@ function(meta_parser_build)
         endforeach()
     endif()
 
-    set(INCLUDES_FILE "${BUILD_META_GENERATED_DIR}/Module.${BUILD_META_TARGET}.Includes.txt")
+    set(INCLUDES_FILE "${CMAKE_CURRENT_BINARY_DIR}/generated/Module.${BUILD_META_TARGET}.Includes.txt")
 
-    #file(WRITE ${INCLUDES_FILE} ${INCLUDES})
-    file(GENERATE OUTPUT ${INCLUDES_FILE}
+    # 获取目标依赖库的头文件路径 + 自身定义的头文件路径
+    set(include_genex "$<TARGET_PROPERTY:${BUILD_META_TARGET},INCLUDE_DIRECTORIES>")
+    file(GENERATE OUTPUT "${INCLUDES_FILE}"
         CONTENT "${RAW_INCLUDES_CONTENT}$<JOIN:${include_genex},\n>"
+        TARGET ${BUILD_META_TARGET}
     )
-    
+
     set(DEFINES ${GLOBAL_META_DEFINES} ${BUILD_META_DEFINES})
 
     string(REPLACE " " "" DEFINES_TRIMMED "${DEFINES}")
@@ -129,40 +128,28 @@ function(meta_parser_build)
         set(EMPTY_SOURCE_CONTENTS "")
         set(PCH_SWITCH )
     endif ()
-
-    list(REMOVE_ITEM BUILD_META_GENERATED_FILES "${BUILD_META_SOURCE_ROOT}/${BUILD_META_MODULE_HEADER}")
-
-    message("BUILD_META_GENERATED_FILES: ${BUILD_META_GENERATED_FILES}")
-    foreach (GENERATED_FILE ${BUILD_META_GENERATED_FILES})
-        get_filename_component(EXTENSION ${GENERATED_FILE} EXT)
-
-        set_source_files_properties(${GENERATED_FILE} PROPERTIES GENERATED TRUE)
-
-        # we have to create the files, as they might not be written to
-        #if (NOT EXISTS ${GENERATED_FILE})
-        #    if ("${EXTENSION}" STREQUAL ".Generated.h")
-        #        file(WRITE ${GENERATED_FILE} "")
-        #    else ()
-        #        file(WRITE ${GENERATED_FILE} ${EMPTY_SOURCE_CONTENTS})
-        #    endif ()
-        #endif ()
-    endforeach ()
+    get_target_property(TARGET_FOLDER ${BUILD_META_TARGET} FOLDER)
 
     # add the command that generates the header and source files
-    add_custom_command(
-        OUTPUT ${BUILD_META_GENERATED_FILES}
-        DEPENDS ${BUILD_META_HEADER_FILES}
+    set(TARGET_NAME "${BUILD_META_TARGET}_Pregenerate")
+    add_custom_target(${TARGET_NAME}
+        DEPENDS ${INCLUDES_FILE}
         COMMAND ${BUILD_META_PARSER_EXECUTABLE}
         --target-name "${BUILD_META_TARGET}"
         --source-root "${BUILD_META_SOURCE_ROOT}"
         --in-source "${BUILD_META_SOURCE_ROOT}/${BUILD_META_SOURCE_FILE}"
         --module-header "${BUILD_META_SOURCE_ROOT}/${BUILD_META_MODULE_HEADER}"
-        --out-source "${BUILD_META_MODULE_SOURCE_FILE}"
+        --out-source-filename "${BUILD_META_MODULE_SOURCE_FILE_NAME}"
         --out-dir "${BUILD_META_GENERATED_DIR}"
         ${PCH_SWITCH}
         --includes "${INCLUDES_FILE}"
         ${DEFINES_SWITCH}
         --template-dir "${BUILD_META_TEMPLATE_DIR}"
         --display-diagnostics
+        --force-rebuild
     )
+    if(TARGET_FOLDER)
+        set_target_properties(${TARGET_NAME} PROPERTIES 
+            FOLDER ${TARGET_FOLDER})
+    endif()
 endfunction ()
